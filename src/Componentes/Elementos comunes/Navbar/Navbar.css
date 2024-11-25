@@ -1,0 +1,7 @@
+.Navbar{
+    background-color: rgb(49, 92, 212);
+    height: 4rem;
+    color: white;
+    display: flex;
+    padding-left: 1rem;
+}

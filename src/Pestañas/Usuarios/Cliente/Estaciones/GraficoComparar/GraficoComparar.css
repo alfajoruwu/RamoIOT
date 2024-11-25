@@ -1,0 +1,167 @@
+.MostrarGraficos {
+    display: grid;
+    height: 50rem;
+    grid-template-rows: auto 50% 40%;
+    grid-template-columns: 100%;
+    grid-template-areas:
+      "Filtros"
+      "Grafico"
+      "Elementos";
+    gap: 1rem; /* Espaciado entre las áreas */
+    background-color: #f5f5f5; /* Fondo neutro */
+    padding: 1rem;
+    border-radius: 8px; /* Bordes suaves */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  }
+  
+  .Filtros {
+    grid-area: Filtros;
+    display: flex;
+    flex-direction: row; /* Cambiar a columna para apilar los inputs */
+    gap: 1rem; /* Espaciado entre los filtros */
+    background-color: #ffffff;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+  
+  .Grafico {
+    grid-area: Grafico;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .Elementos {
+    grid-area: Elementos;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .Categoria {
+    margin-bottom: 0.5rem;
+  }
+  
+  .Categoria details summary {
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+  }
+  
+  .SensorItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    padding: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+  }
+  
+  .SensorFlex {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    align-content: center;
+  }
+  
+  .SensorFlex label {
+    width: 50%;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .Colorpicker {
+ 
+    
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    height: 3rem;
+    width: 3rem;
+  }
+  
+  input[type="checkbox"] {
+    width: 50%;
+    height: 1.5rem;
+    cursor: pointer;
+  }
+  
+  input[type="color"] {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  input[type="color"]:hover {
+    border-color: #457b9d;
+  }
+  
+  .MostrarGraficos details summary:hover {
+    color: #457b9d;
+  }
+  
+  .MostrarGraficos::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .MostrarGraficos::-webkit-scrollbar-thumb {
+    background: #457b9d;
+    border-radius: 4px;
+  }
+  
+  .MostrarGraficos::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  
+
+.FiltroDiaEspecifico,
+.FiltroRangoFechas {
+    display: flex;
+    flex-direction: column; /* Asegurar que los inputs se apilen */
+    gap: 0.5rem; /* Espaciado entre los inputs */
+}
+
+label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+}
+
+input[type="date"],
+input[type="time"],
+select {
+    width: 100%; /* Asegurarse de que los inputs no se solapen */
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+  .FiltroRangoFechas {
+    flex-direction: row; /* Cambia la dirección a row en pantallas más grandes */
+  }
+
+  
+
+}
+
+@media (min-width: 800px) {
+  .FiltroDiaEspecifico{
+    flex-direction: row; /* Cambia la dirección a row en pantallas más grandes */
+  }
+}
+
+

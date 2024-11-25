@@ -1,0 +1,10 @@
+.MenuInicial {
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    box-sizing: border-box; /* Asegura que los márgenes no causen desbordamiento */
+  }
+  
