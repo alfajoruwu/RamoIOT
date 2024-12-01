@@ -1,0 +1,50 @@
+.ConfiguracionContainer {
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  h2 {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .CondicionCard {
+    background-color: #222;
+    color: white;
+    padding: 1rem;
+    border: 1px solid #444;
+    border-radius: 8px;
+    width: 300px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .CondicionCard button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .AñadirButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .AñadirButton:hover {
+    background-color: #0056b3;
+  }
+  

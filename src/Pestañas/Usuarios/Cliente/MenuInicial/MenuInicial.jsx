@@ -11,6 +11,10 @@ const MenuInicial = () => {
     navigate('/Estaciones');  
   }
 
+  const irActuadores = () => {
+    navigate('/Actuadores');  
+  }
+
   return (
     <>
     <Navbar titulo={"Menu inicial"}/>
@@ -19,7 +23,7 @@ const MenuInicial = () => {
     
     <button>Resumen</button>
     <button onClick={irEstaciones}>Estaciones</button>
-    <button>Actuadores</button>
+    <button onClick={irActuadores}>Actuadores</button>
     <button>Notificaciones</button>
 
     </div>
