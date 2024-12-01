@@ -21,7 +21,7 @@ const pool = mysql.createPool({
   host: 'db',
   user: 'alfajor',
   password: 'alfajor',
-  database: 'inventario',
+  database: 'IOT',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
