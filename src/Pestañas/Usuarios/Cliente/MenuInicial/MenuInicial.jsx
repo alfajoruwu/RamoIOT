@@ -11,6 +11,23 @@ const MenuInicial = () => {
     navigate('/Estaciones');  
   }
 
+  const irSensores = () => {
+    // simulando datos de sensores
+    const sensoresData = [
+      { id: 1, value: 50 },
+      { id: 2, value: 70 },
+      { id: 3, value: 30 },
+
+    ];
+
+    navigate('/Sensor', { state: { sensoresData } });
+  };
+
+  const sensoresData = [
+    { id: 1, value: 50 },
+    { id: 2, value: 70 },
+    { id: 3, value: 30 },
+];
   return (
     <>
     <Navbar titulo={"Menu inicial"}/>
@@ -21,6 +38,7 @@ const MenuInicial = () => {
     <button onClick={irEstaciones}>Estaciones</button>
     <button>Actuadores</button>
     <button>Notificaciones</button>
+    <button onClick={irSensores} >Sensor E1</button>
 
     </div>
 
