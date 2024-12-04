@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importar el hook useNavigate
 import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar';
 import './MostrarActuador.css';
 import accionesData from './acciones.json'; // Importación directa del JSON
@@ -8,9 +9,9 @@ const MostrarActuador = ({ actuador }) => {
   const [accionSeleccionada, setAccionSeleccionada] = useState('');
   const [modoSeleccionado, setModoSeleccionado] = useState('');
   const opcionesModo = ["Manual", "Semiautomatico", "Automatico"]; // Opciones de modo fijas
+  const navigate = useNavigate(); // Hook para navegar
 
   useEffect(() => {
-    // Buscar el actuador en el JSON por ID o nombre
     const actuadorData = accionesData.find(
       (item) => item.id === actuador.id || item.nombre === actuador.nombre
     );
@@ -27,6 +28,11 @@ const MostrarActuador = ({ actuador }) => {
   if (!acciones.length) {
     return <p>Cargando datos del actuador...</p>; // Muestra un mensaje mientras se cargan los datos
   }
+
+  // Manejar la navegación al presionar el botón
+  const handleNavigate = () => {
+    navigate('/Configuracion', { state: { actuador } }); // Navega a la ruta "configuracion" y pasa el actuador como estado
+  };
 
   return (
     <>
@@ -58,7 +64,9 @@ const MostrarActuador = ({ actuador }) => {
           ))}
         </select>
 
-        <button className="ConfigurarButton">Configurar Automático</button>
+        <button className="ConfigurarButton" onClick={handleNavigate}>
+          Configurar Automático
+        </button>
       </div>
     </>
   );
