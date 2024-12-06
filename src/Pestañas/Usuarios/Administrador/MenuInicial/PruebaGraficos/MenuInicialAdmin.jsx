@@ -1,8 +1,8 @@
 import React from 'react'
-import Navbar from '../../../../Componentes/Elementos comunes/Navbar/Navbar'
-import '../MenuInicial/MenuInicialAdmin.css'
-import Cartagrafico from '../Componentes/CartaGrafico/Cartagrafico'
-import VisualizaGauje from '../Componentes/VisualizaValor/VisualizaGauje'
+import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar'
+import '../PruebaGraficos/MenuInicialAdmin.css'
+import Cartagrafico from '../../Componentes/CartaGrafico/Cartagrafico'
+import VisualizaGauje from '../../Componentes/VisualizaValor/VisualizaGauje'
 
 const MenuInicialAdmin = () => {
   
@@ -30,7 +30,7 @@ const MenuInicialAdmin = () => {
       
       <div className='contenidoGraficos'>
         
-         <Cartagrafico Nombre={'Temperatura - Sensor 1'} data={data1}  Filtro={'Hora'} />
+        <Cartagrafico Nombre={'Temperatura - Sensor 1'} data={data1}  Filtro={'Hora'} />
         <Cartagrafico Nombre={'Temperatura - Sensor 2'} data={data1}  Filtro={'Hora'} />
         <Cartagrafico Nombre={'Temperatura - Sensor 3'} data={data1}  Filtro={'Hora'} />
 

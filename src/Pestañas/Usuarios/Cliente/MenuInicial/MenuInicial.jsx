@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 const MenuInicial = () => {
   const navigate = useNavigate();
   
-  const irEstaciones = () => {
+  const irResumen = () => {
     navigate('/Estaciones');  
   }
 
@@ -21,8 +21,8 @@ const MenuInicial = () => {
 
     <div className='MenuInicial'>
     
-    <button>Resumen</button>
-    <button onClick={irEstaciones}>Estaciones</button>
+    <button onClick={irResumen}>Resumen</button>
+    <button >Estaciones</button>
     <button onClick={irActuadores}>Actuadores</button>
     <button>Notificaciones</button>
 

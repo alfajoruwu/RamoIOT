@@ -3,5 +3,12 @@
     height: 4rem;
     color: white;
     display: flex;
-    padding-left: 1rem;
+    align-items: center; /* Alinea los elementos verticalmente */
+    justify-content: space-between; /* Distribuye el espacio horizontalmente */
+    padding: 0 1rem;
+
+}
+
+button.light{
+    width: 6rem;
 }
