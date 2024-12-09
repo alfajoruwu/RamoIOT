@@ -64,7 +64,7 @@ const Login = () => {
             </div>
             
             <div className='Login'>
-                <h3>IOT Techos Facilito</h3>
+                <h3>IOT Facilito</h3>
                 
                 <input 
                     type="text" 

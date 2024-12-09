@@ -22,6 +22,11 @@ const MenuInicialADMIN = () => {
     const irAcrearusuario = () => {
         navigate('/CrearUsuario');
     }
+
+    const irAadministrarUsuario = (id) => {
+        navigate(`/AdministrarUsuario/${id}`);
+      };
+    
     
     useEffect(() => {
         setUsers(placeholderData);
@@ -45,7 +50,7 @@ const MenuInicialADMIN = () => {
             Usuarios registrados
 
             {users.map((user) => (
-                <button key={user.id}>{user.name}</button>
+                <button onClick={() => irAadministrarUsuario(user.id)} key={user.id}>{user.name}</button>
             ))}
             
     

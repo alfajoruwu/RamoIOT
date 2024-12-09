@@ -11,6 +11,14 @@ import Agregar from './Pestañas/Usuarios/Cliente/Actuadores/Agregar/Agregar'
 import MenuInicialAdmin from './Pestañas/Usuarios/Administrador/MenuInicial/PruebaGraficos/MenuInicialAdmin'
 import MenuInicialADMIN from './Pestañas/Usuarios/Administrador/MenuInicial/MenuInicial/MenuInicialADMIN'
 import CrearNuevoUsuario from './Pestañas/Usuarios/Administrador/CrearNuevoUsuario/CrearNuevoUsuario'
+import AdminsitrarUsuario from './Pestañas/Usuarios/Administrador/AdministrarUsuario/AdminsitrarUsuario'
+import AdministrarSensores from './Pestañas/Usuarios/Administrador/AdministrarSensores/AdministrarSensores'
+import AdministrarActuadores from './Pestañas/Usuarios/Administrador/AdministrarSensores/AdministrarActuadores'
+import ActuadorNuevo from './Pestañas/Usuarios/Administrador/AñadirCrear/ActuadorNuevo'
+import ModificarActuador from './Pestañas/Usuarios/Administrador/ModificarActuador/ModificarActuador'
+
+
+
 function App() {
 
   return (
@@ -34,6 +42,18 @@ function App() {
         <Route path='/MenuInicialADMIN' element={<MenuInicialADMIN/>}/>
         <Route path='/MenuInicialAdmin' element={<MenuInicialAdmin></MenuInicialAdmin>} />
         <Route path='/CrearUsuario' element={<CrearNuevoUsuario/>}/>
+        
+        
+        <Route path='/AdministrarUsuario/:id' element={<AdminsitrarUsuario/>}/>
+        <Route path='/AdministrarSensores/:id' element={<AdministrarSensores/>}/>
+        <Route path='/AdministrarActuadores/:id' element={<AdministrarActuadores/>}/>
+
+        <Route path='/CrearActuador/:id' element={<ActuadorNuevo/>}/>
+
+        <Route path='/ModificarActuador/:id/:ActuadorID' element={<ModificarActuador/>}/>
+        
+
+
 
       </Routes>
 

@@ -19,13 +19,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ------------- Conexion a la base de datos -------------
 const pool = mysql.createPool({
   host: 'db',
-  user: 'alfajor',
-  password: 'alfajor',
+  user: 'root',
+  password: 'example',
   database: 'IOT',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
 });
+
+
+// ------------- Conexion a base de datos online -----------------
+// nombre - alfajorbasedatos
+// usuario - alfajor
+// contraseña - alfajor1234
+
+
 
 
 // ------------- Inicial -------------
@@ -38,10 +46,10 @@ app.get("/", (req, res) => {
 app.post("/Login", (req, res) => {
   const { Correo, Contrasena } = req.body;
 
-  const sql = `SELECT * FROM Usuario WHERE Correo = ? AND Contraseña = ?`;
+  const sql = `SELECT * FROM Usuarios WHERE Correo = ? AND Contrasena = ?`;
   pool.query(sql, [Correo, Contrasena], (err, results) => {
     if (err || results.length === 0) {
-      return res.status(401).json({ error: "Usuario incorrecto" });
+      return res.status(401).json({ error: "Usuario incorrecto: "+err });
     }
     res.status(200).json({ Correo: results[0].Correo, Tipo: results[0].Tipo, Nombre: results[0].Nombre });
   });
