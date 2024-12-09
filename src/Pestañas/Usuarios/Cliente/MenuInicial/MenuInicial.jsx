@@ -15,6 +15,13 @@ const MenuInicial = () => {
     navigate('/Actuadores');  
   }
 
+  const irNotificaciones = () => {
+    navigate('/Notificaciones');  
+  }
+  const irEstaciones = () => {
+    navigate('/Estaciones');  
+  }
+
   return (
     <>
     <Navbar titulo={"Menu inicial"}/>
@@ -22,9 +29,9 @@ const MenuInicial = () => {
     <div className='MenuInicial'>
     
     <button onClick={irResumen}>Resumen</button>
-    <button >Estaciones</button>
+    <button onClick={irEstaciones}>Estaciones</button>
     <button onClick={irActuadores}>Actuadores</button>
-    <button>Notificaciones</button>
+    <button onClick={irNotificaciones}>Notificaciones</button> 
 
     </div>
 
