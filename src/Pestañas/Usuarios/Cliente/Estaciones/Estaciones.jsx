@@ -1,25 +1,25 @@
 import React from 'react'
 import Navbar from '../../../../Componentes/Elementos comunes/Navbar/Navbar'
 
-import ElementosUsuario from './ElementosUsuario/ElementosUsuario'
-
-import GraficoComparar from './GraficoComparar/GraficoComparar'
+import { useNavigate } from 'react-router-dom'
 
 const Estaciones = () => {
+
+  const navigate = useNavigate();
+  
+  const irEstacion1 = () => {
+    navigate('/Estacion1');  
+  }
+
   return (
     
     <>
     <Navbar titulo={"Estaciones"}/>
 
-    <div className='ContenidoEstaciones'>
+    <div className='MenuInicial'>
 
-        <div className='GraficoMostrar'>
-            <GraficoComparar/>
-        </div>
+      <button onClick={irEstacion1}>Estación 1</button>
 
-        {/* <div>
-           <ElementosUsuario/>
-        </div> */}
     </div>
 
     </>
