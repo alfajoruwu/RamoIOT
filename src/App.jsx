@@ -27,6 +27,7 @@ import GraficoComparar from './Pestañas/Usuarios/Cliente/Estaciones/GraficoComp
 
 
 
+import Sensor from './Pestañas/Usuarios/Cliente/Sensores/Sensor'
 function App() {
 
   return (
@@ -67,6 +68,7 @@ function App() {
 
 
 
+        <Route path='/Sensor' element={<Sensor/>} />
       </Routes>
 
       </Router>
