@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../GraficoComparar/GraficoComparar.css';
 import LineaNivo from '../../../../../Componentes/Elementos comunes/Graficos/LinealNIVO/LineaNivo';
+import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar'
+
 
 const GraficoComparar = () => {
   const [datosSimulados, setDatos] = useState([]);
@@ -9775,97 +9777,102 @@ const GraficoComparar = () => {
   };
 
   return (
-    <div className="MostrarGraficos">
-      {/* Filtros */}
-      <div className="Filtros">
-        <div>
-          <label>Filtro:</label>
-          <select value={tipoFiltro} onChange={(e) => setTipoFiltro(e.target.value)}>
-            <option value="diaEspecifico">Por día específico</option>
-            <option value="rangoFechas">Por rango de fechas</option>
-          </select>
+    <>
+      <Navbar titulo={"Gráfico Comparar"} />
+
+      <div className="MostrarGraficos">
+        {/* Filtros */}
+        <div className="Filtros">
+          <div>
+            <label>Filtro:</label>
+            <select value={tipoFiltro} onChange={(e) => setTipoFiltro(e.target.value)}>
+              <option value="diaEspecifico">Por día específico</option>
+              <option value="rangoFechas">Por rango de fechas</option>
+            </select>
+          </div>
+          {tipoFiltro === 'diaEspecifico' && (
+            <div className="FiltroDiaEspecifico">
+              <label>Fecha:</label>
+              <input
+                type="date"
+                value={fechaDia}
+                onChange={(e) => setFechaDia(e.target.value)}
+              />
+              <label>Hora inicio:</label>
+              <input
+                type="time"
+                value={horaInicio}
+                onChange={(e) => setHoraInicio(e.target.value)}
+              />
+              <label>Hora fin:</label>
+              <input
+                type="time"
+                value={horaFin}
+                onChange={(e) => setHoraFin(e.target.value)}
+              />
+            </div>
+          )}
+          {tipoFiltro === 'rangoFechas' && (
+            <div className="FiltroRangoFechas">
+              <label>Fecha inicio:</label>
+              <input
+                type="date"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+              />
+              <label>Fecha fin:</label>
+              <input
+                type="date"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+              />
+            </div>
+          )}
         </div>
-        {tipoFiltro === 'diaEspecifico' && (
-          <div className="FiltroDiaEspecifico">
-            <label>Fecha:</label>
-            <input
-              type="date"
-              value={fechaDia}
-              onChange={(e) => setFechaDia(e.target.value)}
-            />
-            <label>Hora inicio:</label>
-            <input
-              type="time"
-              value={horaInicio}
-              onChange={(e) => setHoraInicio(e.target.value)}
-            />
-            <label>Hora fin:</label>
-            <input
-              type="time"
-              value={horaFin}
-              onChange={(e) => setHoraFin(e.target.value)}
-            />
-          </div>
-        )}
-        {tipoFiltro === 'rangoFechas' && (
-          <div className="FiltroRangoFechas">
-            <label>Fecha inicio:</label>
-            <input
-              type="date"
-              value={fechaInicio}
-              onChange={(e) => setFechaInicio(e.target.value)}
-            />
-            <label>Fecha fin:</label>
-            <input
-              type="date"
-              value={fechaFin}
-              onChange={(e) => setFechaFin(e.target.value)}
-            />
-          </div>
-        )}
-      </div>
 
-      {/* Gráfico */}
-      <div className="Grafico">
-        <LineaNivo
-          data={datosVisibles}
-          colors={({ id }) =>
-            datosSimulados.find((sensor) => sensor.id === id)?.color || '#000'
-          }
-          yLegend=""
-          xLegend=""
-        />
-      </div>
+        {/* Gráfico */}
+        <div className="Grafico">
+          <LineaNivo
+            data={datosVisibles}
+            colors={({ id }) =>
+              datosSimulados.find((sensor) => sensor.id === id)?.color || '#000'
+            }
+            yLegend=""
+            xLegend=""
+          />
+        </div>
 
-      {/* Controles de visibilidad y color */}
-      <div className="Elementos">
-        {Object.entries(sensoresPorCategoria).map(([categoria, sensores]) => (
-          <div key={categoria} className="Categoria">
-            <details>
-              <summary>{categoria}</summary>
-              {sensores.map(sensor => (
-                <div key={sensor.id} className="SensorItem">
-                  <div className="SensorFlex">
-                    <label>{sensor.id}</label>
-                    <input
-                      className="Colorpicker"
-                      type="color"
-                      value={sensor.color}
-                      onChange={e => actualizarColor(sensor.id, e.target.value)}
-                    />
-                    <input
-                      type="checkbox"
-                      checked={sensor.visible}
-                      onChange={() => toggleVisibilidad(sensor.id)}
-                    />
+        {/* Controles de visibilidad y color */}
+        <div className="Elementos">
+          {Object.entries(sensoresPorCategoria).map(([categoria, sensores]) => (
+            <div key={categoria} className="Categoria">
+              <details>
+                <summary>{categoria}</summary>
+                {sensores.map((sensor) => (
+                  <div key={sensor.id} className="SensorItem">
+                    <div className="SensorFlex">
+                      <label>{sensor.id}</label>
+                      <input
+                        className="Colorpicker"
+                        type="color"
+                        value={sensor.color}
+                        onChange={(e) => actualizarColor(sensor.id, e.target.value)}
+                      />
+                      <input
+                        type="checkbox"
+                        checked={sensor.visible}
+                        onChange={() => toggleVisibilidad(sensor.id)}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </details>
-          </div>
-        ))}
+                ))}
+              </details>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
+
 export default GraficoComparar;

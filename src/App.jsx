@@ -11,6 +11,13 @@ import Agregar from './Pestañas/Usuarios/Cliente/Actuadores/Agregar/Agregar'
 import MenuInicialAdmin from './Pestañas/Usuarios/Administrador/MenuInicial/PruebaGraficos/MenuInicialAdmin'
 import MenuInicialADMIN from './Pestañas/Usuarios/Administrador/MenuInicial/MenuInicial/MenuInicialADMIN'
 import CrearNuevoUsuario from './Pestañas/Usuarios/Administrador/CrearNuevoUsuario/CrearNuevoUsuario'
+import Notificaciones from './Pestañas/Usuarios/Cliente/Notificaciones/Notificaciones'
+import SemiAutomatico from './Pestañas/Usuarios/Cliente/Notificaciones/SemiAutomatico/SemiAutomatico'
+import Estacion1 from './Pestañas/Usuarios/Cliente/Estaciones/Estacion1/Estacion1'
+import GraficoComparar from './Pestañas/Usuarios/Cliente/Estaciones/GraficoComparar/GraficoComparar'  
+
+
+
 function App() {
 
   return (
@@ -28,8 +35,11 @@ function App() {
         <Route path='/MostrarActuador' element={<MostrarActuador/>} />
         <Route path='/Configuracion' element={<Configuracion/>} />
         <Route path='/Agregar' element={<Agregar/>} />
-        
-        
+        <Route path='/Notificaciones' element={<Notificaciones/>} />
+        <Route path='/SemiAutomatico' element={<SemiAutomatico/>} />
+        <Route path='/Estacion1' element={<Estacion1/>} />
+        <Route path='/GraficoComparar' element={<GraficoComparar/>} />
+
         {/* ADMIN */}
         <Route path='/MenuInicialADMIN' element={<MenuInicialADMIN/>}/>
         <Route path='/MenuInicialAdmin' element={<MenuInicialAdmin></MenuInicialAdmin>} />
