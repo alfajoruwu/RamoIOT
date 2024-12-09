@@ -13,14 +13,8 @@ const MenuInicial = () => {
 
   const irSensores = () => {
     // simulando datos de sensores
-    const sensoresData = [
-      { id: 1, value: 50 },
-      { id: 2, value: 70 },
-      { id: 3, value: 30 },
 
-    ];
-
-    navigate('/Sensor', { state: { sensoresData } });
+    navigate('/Sensor');
   };
 
 

@@ -3,6 +3,12 @@ import { ResponsivePie } from '@nivo/pie';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../../../../Componentes/Elementos comunes/Navbar/Navbar';
 
+const sensor = [
+  { id: 1, value: 50 },
+  { id: 2, value: 70 },
+  { id: 3, value: 30 },
+];
+
 const Sensor = ({ sensor }) => {
   const { id, value } = sensor;
   const clampedValue = Math.max(0, Math.min(value, 100));
@@ -41,9 +47,9 @@ const SensoresEstacion1 = () => {
   return (
     <>
       <Navbar titulo={"Sensores Estacion 1"} />
-      <div style={{ justifyContent: 'center' }}>
-        {sensoresData.length > 0 ? (
-          sensoresData.map((sensor) => <Sensor key={sensor.id} sensor={sensor} />)
+      <div style={{  justifyContent: 'center' }}>
+        {sensor.length > 0 ? (
+          sensor.map((sensor) => <Sensor key={sensor.id} sensor={sensor} />)
         ) : (
           <p>No se enviaron datos de sensores.</p>
         )}

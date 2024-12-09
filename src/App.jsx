@@ -7,10 +7,10 @@ import Estaciones from './Pestañas/Usuarios/Cliente/Estaciones/Estaciones'
 
 import Sensor from './Pestañas/Usuarios/Cliente/Sensores/Sensor'
 
-import Actuadores from './Pestañas/Usuarios/Cliente/Actuadores/Actuadores'
-import MostrarActuador from './Pestañas/Usuarios/Cliente/Actuadores/MostrarActuador/MostrarActuador'
-import Configuracion from './Pestañas/Usuarios/Cliente/Actuadores/Configuracion/Configuracion'
-import Agregar from './Pestañas/Usuarios/Cliente/Actuadores/Agregar/Agregar'
+// import Actuadores from './Pestañas/Usuarios/Cliente/Actuadores/Actuadores'
+// import MostrarActuador from './Pestañas/Usuarios/Cliente/Actuadores/MostrarActuador/MostrarActuador'
+// import Configuracion from './Pestañas/Usuarios/Cliente/Actuadores/Configuracion/Configuracion'
+// import Agregar from './Pestañas/Usuarios/Cliente/Actuadores/Agregar/Agregar'
 
 function App() {
 
@@ -29,10 +29,10 @@ function App() {
         <Route path='/Estaciones' element={<Estaciones/>} />
 
         <Route path='/Sensor' element={<Sensor/>} />
-        <Route path='/Actuadores' element={<Actuadores/>} />
+        {/* <Route path='/Actuadores' element={<Actuadores/>} />
         <Route path='/MostrarActuador' element={<MostrarActuador/>} />
         <Route path='/Configuracion' element={<Configuracion/>} />
-        <Route path='/Agregar' element={<Agregar/>} />
+        <Route path='/Agregar' element={<Agregar/>} /> */}
 
 
 
