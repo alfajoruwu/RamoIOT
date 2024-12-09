@@ -41,16 +41,16 @@ const Sensor = ({ sensor }) => {
             // Agregar el texto en el centro del gráfico
             <text
               x={centerX}
-              y={centerY}
+              y={centerY-70}
               textAnchor="middle"
               dominantBaseline="central"
               style={{
-                fontSize: '20px',
+                fontSize: '2rem',
                 fontWeight: 'bold',
                 fill: '#333', // Color del texto
               }}
             >
-              {clampedValue}%
+              {clampedValue}
             </text>
           ),
         ]}
