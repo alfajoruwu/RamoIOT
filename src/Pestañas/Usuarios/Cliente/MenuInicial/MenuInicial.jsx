@@ -30,11 +30,6 @@ const MenuInicial = () => {
 
 
 
-  const irActuadores = () => {
-    navigate('/Actuadores');  
-  }
-
-
   return (
     <>
     <Navbar titulo={"Menu inicial"}/>
