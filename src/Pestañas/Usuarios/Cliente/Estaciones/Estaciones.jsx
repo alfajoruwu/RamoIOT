@@ -11,6 +11,10 @@ const Estaciones = () => {
     navigate('/Estacion1');  
   }
 
+  const irMapaEstacion = () => {
+    navigate('/MapaEstacion');  
+  }
+
   return (
     
     <>
@@ -18,6 +22,7 @@ const Estaciones = () => {
 
     <div className='MenuInicial'>
 
+      <button onClick={irMapaEstacion}> Mostrar Mapa estaciones</button>
       <button onClick={irEstacion1}>Estación 1</button>
 
     </div>

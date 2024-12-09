@@ -28,6 +28,8 @@ import GraficoComparar from './Pestañas/Usuarios/Cliente/Estaciones/GraficoComp
 
 
 import Sensor from './Pestañas/Usuarios/Cliente/Sensores/Sensor'
+import AñadirAccion from './Pestañas/Usuarios/Administrador/AdministrarSensores/AñadirAccion/AñadirAccion'
+import AñadirEstacion from './Pestañas/Usuarios/Administrador/AdministrarSensores/AñadirEstacion/AñadirEstacion'
 function App() {
 
   return (
@@ -39,9 +41,9 @@ function App() {
         <Route exact path='/' element={<Login />} /> 
         
         {/* USUARIO */}
-        <Route path='/MenuInicial' element={<MenuInicial/>} />
+        <Route path='/MenuInicial/:id' element={<MenuInicial/>} />
         <Route path='/Estaciones' element={<Estaciones/>} />
-        <Route path='/Mapa' element={<Mapa/>} />
+        <Route path='/MapaEstacion' element={<Mapa/>} />
         <Route path='/Actuadores' element={<Actuadores/>} />
         <Route path='/MostrarActuador' element={<MostrarActuador/>} />
         <Route path='/Configuracion' element={<Configuracion/>} />
@@ -52,7 +54,7 @@ function App() {
         <Route path='/GraficoComparar' element={<GraficoComparar/>} />
 
         {/* ADMIN */}
-        <Route path='/MenuInicialADMIN' element={<MenuInicialADMIN/>}/>
+        <Route path='/MenuInicialADMIN/:id' element={<MenuInicialADMIN/>}/>
         <Route path='/MenuInicialAdmin' element={<MenuInicialAdmin></MenuInicialAdmin>} />
         <Route path='/CrearUsuario' element={<CrearNuevoUsuario/>}/>
         
@@ -64,11 +66,17 @@ function App() {
         <Route path='/CrearActuador/:id' element={<ActuadorNuevo/>}/>
 
         <Route path='/ModificarActuador/:id/:ActuadorID' element={<ModificarActuador/>}/>
-        
+        <Route path='/AñadirAccion/:ActuadorID' element={ <AñadirAccion/> }/>
+
+        <Route path='/AñadirAccion/:ActuadorID/:Modificar' element={ <AñadirAccion/> }/>
 
 
+        <Route path='/Sensores' element={<Sensor/>} />
 
-        <Route path='/Sensor' element={<Sensor/>} />
+        <Route path='AñadirEstacion/:UsuarioID' element={<AñadirEstacion/>} />
+        <Route path='AñadirEstacion/:UsuarioID/:Modificar' element={<AñadirEstacion/>} />
+
+
       </Routes>
 
       </Router>

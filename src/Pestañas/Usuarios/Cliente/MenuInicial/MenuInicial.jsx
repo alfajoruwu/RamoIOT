@@ -8,7 +8,7 @@ const MenuInicial = () => {
   const navigate = useNavigate();
   
   const irResumen = () => {
-    navigate('/Estaciones');  
+    navigate('/GraficoComparar');  
   }
 
   const irActuadores = () => {
@@ -22,11 +22,6 @@ const MenuInicial = () => {
     navigate('/Estaciones');  
   }
 
-  const irSensores = () => {
-    // simulando datos de sensores
-
-    navigate('/Sensor');
-  };
 
 
 
@@ -40,7 +35,8 @@ const MenuInicial = () => {
     <button onClick={irEstaciones}>Estaciones</button>
     <button onClick={irActuadores}>Actuadores</button>
     <button onClick={irNotificaciones}>Notificaciones</button> 
-    <button onClick={irSensores} >Sensor E1</button>
+    
+    {/* <button onClick={irSensores} >Sensor E1</button> */}
 
     </div>
 

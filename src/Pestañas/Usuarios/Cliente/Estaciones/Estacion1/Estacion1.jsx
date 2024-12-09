@@ -24,13 +24,10 @@ const Estacion1 = () => {
 
     <div className='MenuInicial'>
     
-    <button onClick={irSensores}>Sensores</button>
-    <button onClick={irGrafico}>Gráfico</button>
-    <button onClick={irMapaEstacion}>Mapa estación</button>
+      <button onClick={irSensores}>Sensores</button>
 
     
-    
-         </div>
+    </div>
 
     </>
   )

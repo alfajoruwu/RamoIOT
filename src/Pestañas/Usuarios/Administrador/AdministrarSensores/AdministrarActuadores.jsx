@@ -67,7 +67,7 @@ const AdministrarActuadores = () => {
                     >
                         {actuator.name}
                     </button>
-))}
+                ))}
                         
 
             </div>

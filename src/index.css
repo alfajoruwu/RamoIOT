@@ -97,3 +97,11 @@ button.light:focus,
 button.light:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+
+.ContenedorGenerico{
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+  gap: 1rem;
+}

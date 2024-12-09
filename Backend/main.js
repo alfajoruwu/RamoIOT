@@ -17,15 +17,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // ------------- Conexion a la base de datos -------------
-const pool = mysql.createPool({
-  host: 'db',
-  user: 'root',
-  password: 'example',
-  database: 'IOT',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+// const pool = mysql.createPool({
+//   host: 'db',
+//   user: 'root',
+//   password: 'example',
+//   database: 'IOT',
+//   waitForConnections: true,
+//   connectionLimit: 10,
+//   queueLimit: 0
+// });
 
 
 // ------------- Conexion a base de datos online -----------------
@@ -33,6 +33,15 @@ const pool = mysql.createPool({
 // usuario - alfajor
 // contraseña - alfajor1234
 
+const pool = mysql.createPool({
+  host: 'sql10.freesqldatabase.com',
+  user: 'sql10750382',
+  password: '43ZKBBRk6k',
+  database: 'sql10750382',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
 
 
@@ -51,7 +60,7 @@ app.post("/Login", (req, res) => {
     if (err || results.length === 0) {
       return res.status(401).json({ error: "Usuario incorrecto: "+err });
     }
-    res.status(200).json({ Correo: results[0].Correo, Tipo: results[0].Tipo, Nombre: results[0].Nombre });
+    res.status(200).json({Id: results[0].ID  ,Correo: results[0].Correo, Tipo: results[0].Tipo, Nombre: results[0].Nombre });
   });
 });
 

@@ -3,13 +3,19 @@ import { ResponsivePie } from '@nivo/pie';
 import { useLocation } from 'react-router-dom';
 import Navbar from '../../../../Componentes/Elementos comunes/Navbar/Navbar';
 
+
+// Conectar con mqtt
+
+
 const sensor = [
-  { id: 1, value: 50 },
-  { id: 2, value: 70 },
-  { id: 3, value: 30 },
+  { id: 'Temperatura - B612', value: 50 },
+  { id: 'Humedad - 213', value: 70 },
+  { id: 'lluvia - Plumetro', value: 30 },
 ];
 
 const Sensor = ({ sensor }) => {
+
+
   const { id, value } = sensor;
   const clampedValue = Math.max(0, Math.min(value, 100));
   const remainingValue = 100 - clampedValue;
@@ -21,7 +27,7 @@ const Sensor = ({ sensor }) => {
 
   return (
     <div style={{ margin: '10px', height: '300px' }}>
-      <h1 style={{ fontSize: '1.5rem', textAlign: 'center' }}>Sensor {id}</h1>
+      <h1 style={{ fontSize: '1.5rem', textAlign: 'center' }}>{id}</h1>
       <ResponsivePie
         data={data}
         margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
@@ -66,13 +72,14 @@ const SensoresEstacion1 = () => {
   return (
     <>
       <Navbar titulo={"Sensores Estacion 1"} />
-      <div style={{ justifyContent: 'center' }}>
+      <div style={{ justifyContent: 'center', gap: '6rem', display: 'flex', flexDirection: 'column' }}>
         {sensor.length > 0 ? (
-          sensor.map((sensor) => <Sensor key={sensor.id} sensor={sensor} />)
+          sensor.map((sensor) => <Sensor key={sensor.id} sensor={sensor} style={{ margin: '1rem' }} />)
         ) : (
           <p>No se enviaron datos de sensores.</p>
         )}
       </div>
+
     </>
   );
 };
