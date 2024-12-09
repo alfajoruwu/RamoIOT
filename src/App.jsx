@@ -42,8 +42,8 @@ function App() {
         
         {/* USUARIO */}
         <Route path='/MenuInicial/:id' element={<MenuInicial/>} />
-        <Route path='/Estaciones' element={<Estaciones/>} />
-        <Route path='/MapaEstacion' element={<Mapa/>} />
+        <Route path='/Estaciones/:id' element={<Estaciones/>} />
+        <Route path='/MapaEstacion/:id' element={<Mapa/>} />
         <Route path='/Actuadores' element={<Actuadores/>} />
         <Route path='/MostrarActuador' element={<MostrarActuador/>} />
         <Route path='/Configuracion' element={<Configuracion/>} />
