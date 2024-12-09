@@ -23,11 +23,13 @@ const MenuInicial = () => {
     navigate('/Sensor', { state: { sensoresData } });
   };
 
-  const sensoresData = [
-    { id: 1, value: 50 },
-    { id: 2, value: 70 },
-    { id: 3, value: 30 },
-];
+
+
+  const irActuadores = () => {
+    navigate('/Actuadores');  
+  }
+
+
   return (
     <>
     <Navbar titulo={"Menu inicial"}/>
@@ -36,7 +38,7 @@ const MenuInicial = () => {
     
     <button>Resumen</button>
     <button onClick={irEstaciones}>Estaciones</button>
-    <button>Actuadores</button>
+    <button onClick={irActuadores}>Actuadores</button>
     <button>Notificaciones</button>
     <button onClick={irSensores} >Sensor E1</button>
 
