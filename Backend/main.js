@@ -66,17 +66,36 @@ app.post("/Login", (req, res) => {
 
 // ------------ Estaciones ------------
 
-// Obtener todas las estaciones
-app.get("/Estaciones", (req, res) => {
-  const sql = `SELECT * FROM Estaciones`;
-  pool.query(sql, (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: "Error al obtener las estaciones" });
+
+
+app.get('/EstacionesPorUsuario/:id_usuario', (req, res) => {
+  const { id_usuario } = req.params; // Obtén el id del usuario desde los params
+
+  if (!id_usuario) {
+    return res.status(400).json({ error: 'El parámetro id_usuario es obligatorio.' });
+  }
+
+  const query = `
+    SELECT 
+      e.id_estacion AS id,
+      e.Nombre
+    FROM 
+      Estaciones e
+    JOIN 
+      Campos c ON e.id_campo = c.IdCampo
+    JOIN 
+      Usuario_Campo uc ON uc.id_campo = c.IdCampo
+    WHERE 
+      uc.id_usuario = ?;
+  `;
+
+  pool.query(query, [id_usuario], (error, results) => {
+    if (error) {
+      console.error('Error ejecutando la consulta:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
     }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron estaciones" });
-    }
-    res.status(200).json(results);
+
+    res.json(results);
   });
 });
 
@@ -116,156 +135,210 @@ app.get("/Usuario_Campo", (req, res) => {
 
 // ------------ Sensores ------------
 
-// Obtener todos los sensores
-app.get("/Sensores", (req, res) => {
-  const sql = `SELECT * FROM Sensores`;
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error al ejecutar la consulta para 'Sensores':", err.message);
-      return res.status(500).json({ error: "Error al obtener los sensores" });
+app.get('/SensoresPorEstacion/:idEstacion', (req, res) => {
+  const { idEstacion } = req.params; // Obtén el id de la estación desde los params
+
+  if (!idEstacion) {
+    return res.status(400).json({ error: 'El parámetro idEstacion es obligatorio.' });
+  }
+
+  const query = `
+    SELECT 
+      s.idSensor AS id,
+      s.Nombre
+    FROM 
+      Sensores s
+    WHERE 
+      s.id_estacion = ?;
+  `;
+
+  pool.query(query, [idEstacion], (error, results) => {
+    if (error) {
+      console.error('Error ejecutando la consulta:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
     }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron sensores" });
-    }
-    res.status(200).json(results);
+
+    res.json(results);
   });
 });
 
-// ------------ Actuador ------------
 
-// Obtener todos los actuadores
-app.get("/Actuador", (req, res) => {
-  const sql = `SELECT * FROM Actuador`;
-  pool.query(sql, (err, results) => {
+// ------------ ObtenerEstadoActuador ------------
+
+app.get('/ObtenerEstadoActuador/:idActuador', (req, res) => {
+  const { idActuador } = req.params;
+
+  if (!idActuador) {
+    return res.status(400).json({ error: 'El parámetro idActuador es obligatorio.' });
+  }
+
+  // Consulta SQL corregida para obtener las acciones, el modo actual y la notificación
+  const query = `
+    SELECT 
+      A.id_accion AS idAccion, 
+      A.Nombre AS NombreAccion,
+      AC.Modo AS ModoActual,
+      IFNULL(N.Mensaje, 'No') AS Notificacion
+    FROM Actuador AC
+    LEFT JOIN AccionActuador AA ON AC.id = AA.id_actuador
+    LEFT JOIN Accion A ON AA.id_accion = A.id_accion
+    LEFT JOIN Condicion C ON C.id_Actuador = AC.id
+    LEFT JOIN Notificacion N ON N.id_condicion = C.id_condicion
+    WHERE AC.id = ?
+  `;
+
+  pool.query(query, [idActuador], (err, results) => {
     if (err) {
-      console.error("Error al ejecutar la consulta para 'Actuador':", err.message);
-      return res.status(500).json({ error: "Error al obtener los actuadores" });
+      console.error(err);
+      return res.status(500).json({ error: 'Error en la consulta de MySQL.' });
     }
+
     if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron actuadores" });
+      return res.status(404).json({ error: 'Actuador no encontrado.' });
     }
-    res.status(200).json(results);
+
+    // Filtrar las acciones asociadas al actuador
+    const acciones = results.map(result => ({
+      id: result.idAccion,
+      NombreAccion: result.NombreAccion
+    }));
+
+    // Obtener el modo actual y la notificación (asumido que es el mismo para todas las acciones)
+    const modoActual = results[0].ModoActual;
+    const notificacion = results[0].Notificacion;
+
+    // Respuesta final
+    res.json({
+      Acciones: acciones,
+      ModoActual: modoActual,
+      Notificacion: notificacion
+    });
   });
 });
 
-// ------------ Condicion ------------
 
-// Obtener todas las condiciones
-app.get("/Condicion", (req, res) => {
-  const sql = `SELECT * FROM Condicion`;
-  pool.query(sql, (err, results) => {
+// ------------ EjecutarAccionActuador ------------
+
+app.post('/EjecutarAccionActuador', (req, res) => {
+  const { idEstacion, idAccion } = req.body;
+
+  // Validar los parámetros requeridos
+  if (!idEstacion || !idAccion) {
+    return res.status(400).json({ error: 'Faltan parámetros: idEstacion o idAccion.' });
+  }
+
+  // Consulta para obtener el actuador correspondiente a la estación y la acción
+  const query = `
+    SELECT AC.id AS idActuador, AC.Nombre AS NombreActuador, A.Nombre AS NombreAccion, AC.Modo
+    FROM Actuador AC
+    JOIN AccionActuador AA ON AC.id = AA.id_actuador
+    JOIN Accion A ON AA.id_accion = A.id_accion
+    JOIN Estaciones E ON E.id_estacion = ?
+    WHERE A.id_accion = ?;
+  `;
+
+  pool.query(query, [idEstacion, idAccion], (err, results) => {
     if (err) {
-      console.error("Error al ejecutar la consulta para 'Condicion':", err.message);
-      return res.status(500).json({ error: "Error al obtener las condiciones" });
+      console.error(err);
+      return res.status(500).json({ error: 'Error en la consulta de MySQL.' });
     }
+
     if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron condiciones" });
+      return res.status(404).json({ error: 'No se encontró el actuador o la acción para esta estación.' });
     }
-    res.status(200).json(results);
+
+    // Aquí podrías agregar la lógica para ejecutar la acción en el actuador (como interactuar con el hardware o enviarlo a un sistema MQTT, por ejemplo)
+
+    const actuador = results[0];
+    const modoActuador = actuador.Modo;
+
+    // Respuesta de éxito
+    res.json({
+      mensaje: `Acción '${actuador.NombreAccion}' ejecutada en el actuador '${actuador.NombreActuador}' con modo '${modoActuador}'`,
+      actuador: actuador.NombreActuador,
+      accion: actuador.NombreAccion,
+      modo: modoActuador
+    });
   });
 });
 
-// ------------ Notificacion ------------
+// ------------ ObtenerCondicionesActuador ------------
 
-// Obtener todas las notificaciones
-app.get("/Notificacion", (req, res) => {
-  const sql = `SELECT * FROM Notificacion`;
-  pool.query(sql, (err, results) => {
+app.get('/ObtenerCondicionesActuador/:idActuador', (req, res) => {
+  const { idActuador } = req.params;
+
+  // Validar el idActuador
+  if (!idActuador) {
+    return res.status(400).json({ error: 'Falta el parámetro idActuador.' });
+  }
+
+  // Consulta SQL para obtener las condiciones del actuador
+  const query = `
+    SELECT 
+      C.id_condicion AS id,
+      C.Sensor,
+      CONCAT(C.Tipo, ' ', C.Valor, ' ', 
+        CASE 
+          WHEN C.Tipo = 'Mayor' THEN 'grados'
+          WHEN C.Tipo = 'Menor' THEN 'grados'
+          ELSE 'Porcentaje'
+        END) AS condicion,
+      A.Nombre AS accion
+    FROM Condicion C
+    JOIN Actuador AC ON AC.id = C.id_Actuador
+    JOIN Accion A ON A.id_accion = C.id_Accion
+    WHERE AC.id = ?
+  `;
+
+  pool.query(query, [idActuador], (err, results) => {
     if (err) {
-      console.error("Error al ejecutar la consulta para 'Notificacion':", err.message);
-      return res.status(500).json({ error: "Error al obtener las notificaciones" });
+      console.error(err);
+      return res.status(500).json({ error: 'Error en la consulta de MySQL.' });
     }
+
     if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron notificaciones" });
+      return res.status(404).json({ error: 'No se encontraron condiciones para el actuador especificado.' });
     }
-    res.status(200).json(results);
+
+    // Respuesta con las condiciones encontradas
+    res.json(results);
   });
 });
 
-// ------------ Accion ------------
+// ------------ Añadir condición sensor ------------
 
-// Obtener todas las acciones
-app.get("/Accion", (req, res) => {
-  const sql = `SELECT * FROM Accion`;
-  pool.query(sql, (err, results) => {
+app.post('/AnadirCondicionSensor', (req, res) => {
+  const { id, Variable, tipo, valor, accionID, actuadorID } = req.body;
+
+  // Validación de datos
+  if (!id || !Variable || !tipo || !valor || !accionID || !actuadorID) {
+    return res.status(400).json({ error: 'Faltan parámetros en el cuerpo de la solicitud.' });
+  }
+
+  // Consulta SQL para insertar la nueva condición
+  const query = `
+    INSERT INTO Condicion (Sensor, Tipo, Valor, id_Accion, id_Actuador)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  // Variables que se pasan a la consulta SQL
+  const sensor = `Sensor_${Variable}_${id}`; // Formato del nombre del sensor: Sensor_Variable_Id
+  const tipoCondicion = tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase(); // Asegura que el tipo esté correctamente capitalizado
+
+  // Ejecutar la consulta
+  pool.query(query, [sensor, tipoCondicion, valor, accionID, actuadorID], (err, results) => {
     if (err) {
-      console.error("Error al ejecutar la consulta para 'Accion':", err.message);
-      return res.status(500).json({ error: "Error al obtener las acciones" });
+      console.error(err);
+      return res.status(500).json({ error: 'Error al añadir la condición en la base de datos.' });
     }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron acciones" });
-    }
-    res.status(200).json(results);
+
+    // Respuesta exitosa
+    res.json({ message: 'Condición añadida exitosamente.' });
   });
 });
 
-// ------------ AccionActuador ------------
 
-// Obtener todas las relaciones acción-actuador
-app.get("/AccionActuador", (req, res) => {
-  const sql = `SELECT * FROM AccionActuador`;
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error al ejecutar la consulta para 'AccionActuador':", err.message);
-      return res.status(500).json({ error: "Error al obtener las relaciones acción-actuador" });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron relaciones acción-actuador" });
-    }
-    res.status(200).json(results);
-  });
-});
 
-// ------------ Temporizador ------------
-
-// Obtener todos los temporizadores
-app.get("/Temporizador", (req, res) => {
-  const sql = `SELECT * FROM Temporizador`;
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error al ejecutar la consulta para 'Temporizador':", err.message);
-      return res.status(500).json({ error: "Error al obtener los temporizadores" });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron temporizadores" });
-    }
-    res.status(200).json(results);
-  });
-});
-
-// ------------ Grupos ------------
-
-// Obtener todos los grupos
-app.get("/Grupos", (req, res) => {
-  const sql = `SELECT * FROM Grupos`;
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error al ejecutar la consulta para 'Grupos':", err.message);
-      return res.status(500).json({ error: "Error al obtener los grupos" });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron grupos" });
-    }
-    res.status(200).json(results);
-  });
-});
-
-// ------------ AccionGrupo ------------
-
-// Obtener todas las relaciones entre Accion y Grupo
-app.get("/AccionGrupo", (req, res) => {
-  const sql = `SELECT * FROM AccionGrupo`;
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error al ejecutar la consulta para 'AccionGrupo':", err.message);
-      return res.status(500).json({ error: "Error al obtener las relaciones acción-grupo" });
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron relaciones acción-grupo" });
-    }
-    res.status(200).json(results);
-  });
-});
 
 // ------------- Print del puerto -------------
 app.listen(port, () => {
