@@ -20,7 +20,7 @@ const Sensor = ({ sensor }) => {
   ];
 
   return (
-    <div style={{ margin: '20px', height: '300px' }}>
+    <div style={{ margin: '10px', height: '300px' }}>
       <h1 style={{ fontSize: '1.5rem', textAlign: 'center' }}>Sensor {id}</h1>
       <ResponsivePie
         data={data}
@@ -35,6 +35,25 @@ const Sensor = ({ sensor }) => {
         enableArcLabels={false}
         enableArcLinkLabels={false}
         legends={[]}
+        layers={[
+          'arcs', // La capa estándar para el gráfico
+          ({ centerX, centerY }) => (
+            // Agregar el texto en el centro del gráfico
+            <text
+              x={centerX}
+              y={centerY}
+              textAnchor="middle"
+              dominantBaseline="central"
+              style={{
+                fontSize: '20px',
+                fontWeight: 'bold',
+                fill: '#333', // Color del texto
+              }}
+            >
+              {clampedValue}%
+            </text>
+          ),
+        ]}
       />
     </div>
   );
@@ -47,7 +66,7 @@ const SensoresEstacion1 = () => {
   return (
     <>
       <Navbar titulo={"Sensores Estacion 1"} />
-      <div style={{  justifyContent: 'center' }}>
+      <div style={{ justifyContent: 'center' }}>
         {sensor.length > 0 ? (
           sensor.map((sensor) => <Sensor key={sensor.id} sensor={sensor} />)
         ) : (
