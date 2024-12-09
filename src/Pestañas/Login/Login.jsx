@@ -33,6 +33,7 @@ const Login = () => {
 
 
     const usarNavigate = () => {
+        //navigate('/MenuInicialADMIN');
         navigate('/MenuInicial');
         api.post('/Login', {
             Correo: usuario,

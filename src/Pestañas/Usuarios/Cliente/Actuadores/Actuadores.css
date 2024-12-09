@@ -1,0 +1,45 @@
+.ActuadorCard {
+  display: flex;
+  justify-content: space-between; /* Asegura espacio entre el texto y el botón */
+  align-items: center;
+  background-color: white;
+  color: black;
+  padding: 0.5rem 1rem;
+  width: 70%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative; /* Para asegurar que el botón se pueda posicionar dentro de la tarjeta */
+}
+
+.ActuadorCard span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ActuadorCard button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  height: 40px; /* Altura aumentada */
+  width: 80px; /* Ancho reducido */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+  align-self: center; /* Asegura que el botón esté centrado verticalmente */
+  margin-left: auto; /* Alinea el botón a la derecha */
+}
+
+.ActuadorCard button:hover {
+  background-color: #0056b3;
+}
+
+.ActuadoresContainer{
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+}

@@ -1,0 +1,21 @@
+[
+    {
+      "id": 1,
+      "sensor": "Sensor X",
+      "condicion": "Temperatura > 25 grados",
+      "accion": "Abrir techo"
+    },
+    {
+      "id": 2,
+      "sensor": "Sensor Y",
+      "condicion": "Temperatura < 5 grados",
+      "accion": "Cerrar techo"
+    },
+    {
+      "id": 3,
+      "sensor": "Promedio - Viento",
+      "condicion": "Viento > 10 km/h",
+      "accion": "Cerrar techo"
+    }
+  ]
+  

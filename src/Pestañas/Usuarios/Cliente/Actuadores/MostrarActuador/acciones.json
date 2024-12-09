@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "nombre": "Actuador X - Motor 1",
+    "accionSeleccionada": "Abrir techo",
+    "modoSeleccionado": "Manual"
+  },
+  {
+    "id": 2,
+    "nombre": "Actuador X - Motor 2",
+    "accionSeleccionada": "Cerrar techo",
+    "modoSeleccionado": "Semiautomatico"
+  },
+  {
+    "id": 3,
+    "nombre": "Actuador X - Motor 3",
+    "accionSeleccionada": "Reiniciar",
+    "modoSeleccionado": "Automatico"
+  }
+]
