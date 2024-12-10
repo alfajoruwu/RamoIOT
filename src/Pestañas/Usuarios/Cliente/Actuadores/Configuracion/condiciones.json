@@ -3,19 +3,19 @@
       "id": 1,
       "sensor": "Sensor X",
       "condicion": "Temperatura > 25 grados",
-      "accion": "Abrir techo"
+      "accion": "Accion X"
     },
     {
       "id": 2,
       "sensor": "Sensor Y",
       "condicion": "Temperatura < 5 grados",
-      "accion": "Cerrar techo"
+      "accion": "Accion Y"
     },
     {
       "id": 3,
       "sensor": "Promedio - Viento",
-      "condicion": "Viento > 10 km/h",
-      "accion": "Cerrar techo"
+      "condicion": "Humedad > 25%",
+      "accion": "Accion Z"
     }
   ]
   

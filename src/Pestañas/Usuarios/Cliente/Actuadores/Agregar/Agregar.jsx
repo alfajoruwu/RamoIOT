@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar';
 import './Agregar.css';
+import accionesData from './accion.json'; // Importar JSON con acciones
 
 const Agregar = () => {
   const [sensor, setSensor] = useState('');
@@ -10,11 +11,16 @@ const Agregar = () => {
     operador: '>',
     valor: '',
   });
-  const [accion, setAccion] = useState('Abrir techo');
+  const [accion, setAccion] = useState('');
+  const [accionesDisponibles, setAccionesDisponibles] = useState([]);
 
-  const opcionesCondicion = ['Viento', 'Temperatura', 'Humedad', 'Lluvia'];
-  const operadores = ['<', '>', '='];
-  const accionesDisponibles = ['Abrir techo', 'Cerrar techo', 'Reiniciar'];
+  // Cargar acciones desde el JSON
+  useEffect(() => {
+    if (accionesData && accionesData.Acciones) {
+      setAccionesDisponibles(accionesData.Acciones);
+      setAccion(accionesData.Acciones[0]?.NombreAccion || '');
+    }
+  }, []);
 
   // Manejar el cambio en los inputs
   const handleCondicionChange = (field, value) => {
@@ -31,12 +37,26 @@ const Agregar = () => {
 
   // Manejar guardar
   const handleGuardar = () => {
-    console.log({
-      sensor,
-      condiciones,
-      accion,
-    });
-    alert('Sensor guardado con éxito.');
+    // Buscar la acción seleccionada por su nombre
+    const accionSeleccionada = accionesDisponibles.find((a) => a.NombreAccion === accion);
+
+    if (!accionSeleccionada) {
+      alert('Por favor, seleccione una acción válida.');
+      return;
+    }
+
+    // Crear el objeto para enviar a la API
+    const payload = {
+      id: sensor,
+      Variable: nuevaCondicion.tipo,
+      tipo: nuevaCondicion.operador === '>' ? 'mayor' : nuevaCondicion.operador === '<' ? 'menor' : 'igual',
+      valor: parseFloat(nuevaCondicion.valor),
+      accionID: accionSeleccionada.id,
+      actuadorID: 1, // Suponiendo que el actuadorID es fijo o viene de otro lugar
+    };
+
+    console.log('Datos enviados a la API:', payload);
+    alert('Condición guardada con éxito. Revisa la consola para más detalles.');
   };
 
   return (
@@ -59,7 +79,7 @@ const Agregar = () => {
             value={nuevaCondicion.tipo}
             onChange={(e) => handleCondicionChange('tipo', e.target.value)}
           >
-            {opcionesCondicion.map((opcion, index) => (
+            {['Viento', 'Temperatura', 'Humedad', 'Lluvia'].map((opcion, index) => (
               <option key={index} value={opcion}>
                 {opcion}
               </option>
@@ -71,7 +91,7 @@ const Agregar = () => {
             value={nuevaCondicion.operador}
             onChange={(e) => handleCondicionChange('operador', e.target.value)}
           >
-            {operadores.map((op, index) => (
+            {['<', '>', '='].map((op, index) => (
               <option key={index} value={op}>
                 {op}
               </option>
@@ -104,9 +124,9 @@ const Agregar = () => {
           value={accion}
           onChange={(e) => setAccion(e.target.value)}
         >
-          {accionesDisponibles.map((accion, index) => (
-            <option key={index} value={accion}>
-              {accion}
+          {accionesDisponibles.map((accion) => (
+            <option key={accion.id} value={accion.NombreAccion}>
+              {accion.NombreAccion}
             </option>
           ))}
         </select>

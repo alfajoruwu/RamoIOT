@@ -1,13 +1,10 @@
 
 [
     {
-      "id": 1,
-      "nombre": "Actuador1",
       "Acciones": [
         { "id": 1, "NombreAccion": "Abrir techo" },
         { "id": 2, "NombreAccion": "Cerrar techo" },
         { "id": 3, "NombreAccion": "Reiniciar" }
-      ],
-      "ModoActual": "Manual"
+      ]
     }
 ]

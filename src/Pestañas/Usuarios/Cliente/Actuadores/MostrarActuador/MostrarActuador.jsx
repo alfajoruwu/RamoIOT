@@ -13,29 +13,28 @@ const MostrarActuador = ({ actuador }) => {
   const navigate = useNavigate();
 
   const fetchActuadorData = () => {
+    // Buscar los datos del actuador en el JSON
     const actuadorData = accionesData.find(
       (item) => item.id === actuador.id || item.nombre === actuador.nombre
     );
 
     if (actuadorData) {
-      setAcciones(["Abrir techo", "Cerrar techo", "Reiniciar"]);
-      setAccionSeleccionada(actuadorData.accionSeleccionada);
-      setModoSeleccionado(actuadorData.modoSeleccionado);
+      setAcciones(actuadorData.Acciones); // Establecer las acciones del actuador
+      setAccionSeleccionada(actuadorData.Acciones[0]?.NombreAccion || ''); // Seleccionar la primera acción por defecto
+      setModoSeleccionado(actuadorData.ModoActual); // Establecer el modo actual
     } else {
       console.warn(`No se encontraron datos para el actuador:`, actuador);
     }
   };
 
-  // Ejecutar la función de obtención de datos al cargar el componente
   useEffect(() => {
-    fetchActuadorData();
+    fetchActuadorData(); // Cargar los datos del actuador al inicio
   }, [actuador]);
 
   if (!acciones.length) {
     return <p>Cargando datos del actuador...</p>;
   }
 
-  // Manejar la navegación al presionar el botón
   const handleNavigate = () => {
     navigate('/Configuracion', { state: { actuador } });
   };
@@ -49,10 +48,10 @@ const MostrarActuador = ({ actuador }) => {
           {acciones.map((accion, index) => (
             <button
               key={index}
-              className={`AccionButton ${accionSeleccionada === accion ? 'Seleccionada' : ''}`}
-              onClick={() => setAccionSeleccionada(accion)}
+              className={`AccionButton ${accionSeleccionada === accion.NombreAccion ? 'Seleccionada' : ''}`}
+              onClick={() => setAccionSeleccionada(accion.NombreAccion)}
             >
-              {accion}
+              {accion.NombreAccion}
             </button>
           ))}
         </div>
