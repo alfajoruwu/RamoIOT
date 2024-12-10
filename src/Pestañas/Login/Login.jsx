@@ -34,19 +34,20 @@ const Login = () => {
 
     const usarNavigate = () => {
         //navigate('/MenuInicialADMIN');
-        navigate('/MenuInicial');
+        //navigate('/MenuInicial');
         api.post('/Login', {
             Correo: usuario,
             Contrasena: contrasena
         })
         .then(response => {
+
             console.log('Datos enviados:', response.data);
-            if(response.data.Tipo == "administrador"){
-              navigate('/MenuInicialAdmin');
+            if(response.data.Tipo == "Admin"){
+              navigate(`/MenuInicialAdmin/${response.data.Id}`);
             }
 
-            else if(response.data.Tipo == "usuario"){
-              navigate('/MenuInicial');
+            else if(response.data.Tipo == "Usuario"){
+              navigate(`/MenuInicial/${response.data.Id}`);
             };
 
         })

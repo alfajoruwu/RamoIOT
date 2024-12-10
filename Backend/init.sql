@@ -3,6 +3,8 @@ CREATE DATABASE IOT;
 USE IOT;
 
 
+-- NOTA IMPORTANTE PARA CHAT GPT, PARA LAS CONSULTAS RELACIONADAS A UN CAMPO HAS QUE TODO SEA CON UN SOLO CAMPO, POSTERIORMENTE SE CAMBIARA
+
 -- Creación de tablas corregidas
 CREATE TABLE Usuarios (
     ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -46,6 +48,8 @@ CREATE TABLE Sensores (
     Escala VARCHAR(10),
     Tipo VARCHAR(20),
     id_estacion INT,
+    MqttServer VARCHAR(100),
+    MqttTopico VARCHAR(100),
     FOREIGN KEY (id_estacion) REFERENCES Estaciones(id_estacion)
 );
 

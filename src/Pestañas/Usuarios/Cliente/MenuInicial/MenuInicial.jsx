@@ -1,14 +1,16 @@
 import React from 'react'
 import Navbar from '../../../../Componentes/Elementos comunes/Navbar/Navbar'
 import '../MenuInicial/MenuInicial.css'
-
+import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
 const MenuInicial = () => {
   const navigate = useNavigate();
+
+  const {id} = useParams(); 
   
   const irResumen = () => {
-    navigate('/Estaciones');  
+    navigate('/GraficoComparar');  
   }
 
   const irActuadores = () => {
@@ -18,15 +20,10 @@ const MenuInicial = () => {
   const irNotificaciones = () => {
     navigate('/Notificaciones');  
   }
-  const irEstaciones = () => {
-    navigate('/Estaciones');  
+  const irEstaciones = (id) => {
+    navigate(`/Estaciones/${id}`);  
   }
 
-  const irSensores = () => {
-    // simulando datos de sensores
-
-    navigate('/Sensor');
-  };
 
 
 
@@ -37,10 +34,11 @@ const MenuInicial = () => {
     <div className='MenuInicial'>
     
     <button onClick={irResumen}>Resumen</button>
-    <button onClick={irEstaciones}>Estaciones</button>
+    <button  onClick={() => irEstaciones(id)}>Estaciones</button>
     <button onClick={irActuadores}>Actuadores</button>
     <button onClick={irNotificaciones}>Notificaciones</button> 
-    <button onClick={irSensores} >Sensor E1</button>
+    
+    {/* <button onClick={irSensores} >Sensor E1</button> */}
 
     </div>
 

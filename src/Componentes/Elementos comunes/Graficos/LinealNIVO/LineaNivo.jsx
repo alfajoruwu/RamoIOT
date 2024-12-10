@@ -40,7 +40,7 @@ const LineaNivo = ({
     <div style={{ height: '100%', width: '100%' }}>
       <ResponsiveLine
         data={data}
-        margin={{ top: 50, right: 50, bottom: 100, left: 70 }}
+        margin={{ top: 30, right: 10, bottom: 60, left: 25 }}
         xScale={{
           type: 'time',
           format: '%Y-%m-%dT%H:%M:%S',
