@@ -1,28 +1,18 @@
-import React from 'react';
-import { ResponsivePie } from '@nivo/pie';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import api from '../../../../Utils/Axios/AxiosInstance';
 import Navbar from '../../../../Componentes/Elementos comunes/Navbar/Navbar';
+import { ResponsivePie } from '@nivo/pie';
 
-
-// Conectar con mqtt
-
-
-const sensor = [
-  { id: 'Temperatura - B612', value: 50 },
-  { id: 'Humedad - 213', value: 70 },
-  { id: 'lluvia - Plumetro', value: 30 },
-];
-
+// Componente para cada sensor
 const Sensor = ({ sensor }) => {
-
-
   const { id, value } = sensor;
   const clampedValue = Math.max(0, Math.min(value, 100));
   const remainingValue = 100 - clampedValue;
 
   const data = [
-    { id: 'progress', label: 'Progress', value: clampedValue, color: 'green' },
-    { id: 'remaining', label: 'Remaining', value: remainingValue, color: 'gray' },
+    { id: 'progress', label: 'Progreso', value: clampedValue, color: 'green' },
+    { id: 'remaining', label: 'Restante', value: remainingValue, color: 'gray' },
   ];
 
   return (
@@ -42,18 +32,17 @@ const Sensor = ({ sensor }) => {
         enableArcLinkLabels={false}
         legends={[]}
         layers={[
-          'arcs', // La capa estándar para el gráfico
+          'arcs',
           ({ centerX, centerY }) => (
-            // Agregar el texto en el centro del gráfico
             <text
               x={centerX}
-              y={centerY-70}
+              y={centerY - 70}
               textAnchor="middle"
               dominantBaseline="central"
               style={{
                 fontSize: '2rem',
                 fontWeight: 'bold',
-                fill: '#333', // Color del texto
+                fill: '#333',
               }}
             >
               {clampedValue}
@@ -65,21 +54,59 @@ const Sensor = ({ sensor }) => {
   );
 };
 
+
 const SensoresEstacion1 = () => {
-  const location = useLocation();
-  const sensoresData = location.state?.sensoresData || []; 
+  const { id } = useParams(); // El id con el useParams
+  const [sensoresData, setSensoresData] = useState([]); // Para guardar el Json con los sensores de cada estacion
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get(`/SensoresPorEstacion/${id}`); 
+        setSensoresData(response.data);
+      } catch (err) {
+        console.error('Error al obtener datos:', err);
+        setSensoresData([
+          {
+              id:'Temperatura - B123',
+              value: 30,
+              MqttServer: '192.168.1.123',
+              MqttTopico: 'Temperatura',
+          },
+          {
+              id:'Humedad - e123',
+              value: 12,
+              MqttServer: '192.168.1.123',
+              MqttTopico: 'Humedad',
+          }
+          ]);
+        setError('No se pudieron cargar los datos.'); 
+      
+      
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   return (
     <>
-      <Navbar titulo={"Sensores Estacion 1"} />
+      <Navbar titulo={`Sensores Estación ${id}`} />
       <div style={{ justifyContent: 'center', gap: '6rem', display: 'flex', flexDirection: 'column' }}>
-        {sensor.length > 0 ? (
-          sensor.map((sensor) => <Sensor key={sensor.id} sensor={sensor} style={{ margin: '1rem' }} />)
+        {loading ? (
+          <p>Cargando datos...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : sensoresData.length > 0 ? (
+          sensoresData.map((sensor) => <Sensor key={sensor.id} sensor={sensor} />)
         ) : (
-          <p>No se enviaron datos de sensores.</p>
+          <p>No se encontraron datos para esta estación.</p>
         )}
       </div>
-
     </>
   );
 };
