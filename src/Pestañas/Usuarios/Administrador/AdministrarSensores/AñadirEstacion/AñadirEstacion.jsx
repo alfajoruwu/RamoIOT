@@ -2,12 +2,19 @@ import React from 'react'
 import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 
 const AñadirEstacion = () => {
 
   const { UsuarioID,Modificar} = useParams(); 
 
+
+  const navigate = useNavigate();
+
+
+  const irAModificarSensor = (idSensor,idEstacion) => {
+    navigate(`/CrearModificarSensor/${id}`);
+  }
 
 
   useEffect(() => {
@@ -43,8 +50,8 @@ const AñadirEstacion = () => {
         {Modificar && (
         <div className='ContenedorGenerico'>
           Sensores
-          <button>Crear Sensor</button>
-
+          <button onClick={() => irAModificarSensor(idSensor,idEstacion)} >Crear Sensor</button>
+              
           Sensores Disponibles
           <button>Sensor 1</button>
           <button>Sensor 2</button>

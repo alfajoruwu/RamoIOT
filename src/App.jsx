@@ -30,6 +30,7 @@ import GraficoComparar from './Pestañas/Usuarios/Cliente/Estaciones/GraficoComp
 import Sensor from './Pestañas/Usuarios/Cliente/Sensores/Sensor'
 import AñadirAccion from './Pestañas/Usuarios/Administrador/AdministrarSensores/AñadirAccion/AñadirAccion'
 import AñadirEstacion from './Pestañas/Usuarios/Administrador/AdministrarSensores/AñadirEstacion/AñadirEstacion'
+import CrearSensor from './Pestañas/Usuarios/Administrador/AñadirSensores/CrearSensor'
 function App() {
 
   return (
@@ -73,9 +74,11 @@ function App() {
 
         <Route path='/Sensores' element={<Sensor/>} />
 
-        <Route path='AñadirEstacion/:UsuarioID' element={<AñadirEstacion/>} />
-        <Route path='AñadirEstacion/:UsuarioID/:Modificar' element={<AñadirEstacion/>} />
+        <Route path='/AñadirEstacion/:UsuarioID' element={<AñadirEstacion/>} />
+        <Route path='/AñadirEstacion/:UsuarioID/:Modificar' element={<AñadirEstacion/>} />
 
+
+        <Route path='/CrearModificarSensor/:EstacionID/:SensorID' element={<CrearSensor/>}/>
 
       </Routes>
 
