@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar';
 import './Agregar.css';
-import accionesData from './accion.json'; // Importar JSON con acciones
+import accionesData from './acciones.json'; // Importar JSON con acciones
 
 const Agregar = () => {
   const [sensor, setSensor] = useState('');
