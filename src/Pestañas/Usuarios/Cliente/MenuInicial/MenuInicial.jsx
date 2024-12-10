@@ -7,6 +7,17 @@ import { useNavigate } from 'react-router-dom'
 const MenuInicial = () => {
   const navigate = useNavigate();
   
+  const irResumen = () => {
+    navigate('/Estaciones');  
+  }
+
+  const irActuadores = () => {
+    navigate('/Actuadores');  
+  }
+
+  const irNotificaciones = () => {
+    navigate('/Notificaciones');  
+  }
   const irEstaciones = () => {
     navigate('/Estaciones');  
   }
@@ -19,21 +30,16 @@ const MenuInicial = () => {
 
 
 
-  const irActuadores = () => {
-    navigate('/Actuadores');  
-  }
-
-
   return (
     <>
     <Navbar titulo={"Menu inicial"}/>
 
     <div className='MenuInicial'>
     
-    <button>Resumen</button>
+    <button onClick={irResumen}>Resumen</button>
     <button onClick={irEstaciones}>Estaciones</button>
     <button onClick={irActuadores}>Actuadores</button>
-    <button>Notificaciones</button>
+    <button onClick={irNotificaciones}>Notificaciones</button> 
     <button onClick={irSensores} >Sensor E1</button>
 
     </div>

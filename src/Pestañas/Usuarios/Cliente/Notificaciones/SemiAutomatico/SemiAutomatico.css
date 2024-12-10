@@ -1,0 +1,44 @@
+.MenuInicial {
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    box-sizing: border-box; 
+  }
+
+.MenuInicial2 {
+    margin: 2rem;
+    display: flex;
+    flex-direction: row; /* Cambiado de column a row */
+    justify-content: center;
+    align-items: center;
+    gap: 1rem; /* Espaciado entre botones */
+    box-sizing: border-box; 
+}
+
+  
+  .TituloAbajoNavbar {
+    text-align: center; 
+    margin: 20px auto; 
+    font-family: Arial, sans-serif;
+    color: blue; 
+    max-width: 90%; 
+    word-wrap: break-word; 
+  }
+  
+  .TituloAbajoNavbar h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .TituloAbajoNavbar p {
+    font-size: 1rem;
+    color: #666;
+  }
+
+  
+
+  
+  

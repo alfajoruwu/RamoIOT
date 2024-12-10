@@ -14,13 +14,17 @@ services:
   db:
     image: mariadb
     restart: always
+    ports:
+      - "3306:3306"
     environment:
       MARIADB_ROOT_PASSWORD: example
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./my.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf
     networks:
       - my_network
+ 
 
   adminer:
     image: adminer
