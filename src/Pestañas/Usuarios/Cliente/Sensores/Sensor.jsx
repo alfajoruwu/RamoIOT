@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import mqtt from 'mqtt'; 
 import api from '../../../../Utils/Axios/AxiosInstance';
 import Navbar from '../../../../Componentes/Elementos comunes/Navbar/Navbar';
 import { ResponsivePie } from '@nivo/pie';
@@ -54,37 +55,35 @@ const Sensor = ({ sensor }) => {
   );
 };
 
-
 const SensoresEstacion1 = () => {
-  const { id } = useParams(); // El id con el useParams
-  const [sensoresData, setSensoresData] = useState([]); // Para guardar el Json con los sensores de cada estacion
+  const { id } = useParams();
+  const [sensoresData, setSensoresData] = useState([]); // Estado para los sensores
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get(`/SensoresPorEstacion/${id}`); 
+        const response = await api.get(`/SensoresPorEstacion/${id}`);
         setSensoresData(response.data);
       } catch (err) {
         console.error('Error al obtener datos:', err);
+        // Sensores por defecto
         setSensoresData([
           {
-              id:'Temperatura - B123',
-              value: 30,
-              MqttServer: '192.168.1.123',
-              MqttTopico: 'Temperatura',
+            id: 'Temperatura - B123',
+            value: 30,
+            MqttServer: 'mqtt://192.168.1.123',
+            MqttTopico: 'Temperatura',
           },
           {
-              id:'Humedad - e123',
-              value: 12,
-              MqttServer: '192.168.1.123',
-              MqttTopico: 'Humedad',
-          }
-          ]);
-        setError('No se pudieron cargar los datos.'); 
-      
-      
+            id: 'Humedad - e123',
+            value: 12,
+            MqttServer: 'mqtt://192.168.1.123',
+            MqttTopico: 'Humedad',
+          },
+        ]);
+        setError('No se pudieron cargar los datos.');
       } finally {
         setLoading(false);
       }
@@ -92,6 +91,44 @@ const SensoresEstacion1 = () => {
 
     fetchData();
   }, [id]);
+
+  // Conectar a MQTT
+  useEffect(() => {
+    if (sensoresData.length === 0) return;
+
+    const mqttClients = []; 
+    const updatedData = [...sensoresData]; 
+
+    sensoresData.forEach((sensor, index) => {
+      const client = mqtt.connect(sensor.MqttServer); // Conexión al servidor MQTT
+
+      client.on('connect', () => {
+        console.log(`Conectado al servidor MQTT: ${sensor.MqttServer}`);
+        client.subscribe(sensor.MqttTopico, (err) => {
+          if (!err) {
+            console.log(`Suscrito al tópico: ${sensor.MqttTopico}`);
+          }
+        });
+      });
+
+      client.on('message', (topic, message) => {
+        if (topic === sensor.MqttTopico) {
+          console.log(`Mensaje recibido en ${topic}: ${message.toString()}`);
+          updatedData[index] = {
+            ...sensor,
+            value: parseFloat(message.toString()), // Obtener el nuevo valor para el sensor
+          };
+          setSensoresData([...updatedData]); 
+        }
+      });
+
+      mqttClients.push(client);
+    });
+
+    return () => {
+      mqttClients.forEach((client) => client.end());
+    };
+  }, [sensoresData]);
 
   return (
     <>
