@@ -51,7 +51,7 @@ function App() {
         <Route path='/Agregar' element={<Agregar/>} />
         <Route path='/Notificaciones' element={<Notificaciones/>} />
         <Route path='/SemiAutomatico' element={<SemiAutomatico/>} />
-        <Route path='/Estacion1' element={<Estacion1/>} />
+        <Route path='/Estacion/:Id' element={<Estacion1/>} />
         <Route path='/GraficoComparar' element={<GraficoComparar/>} />
 
         {/* ADMIN */}

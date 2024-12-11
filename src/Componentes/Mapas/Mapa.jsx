@@ -16,15 +16,21 @@ export const Mapa = () => {
   
   useEffect(() => {
     const fetchEstaciones = async () => {
+      let estacionesMarcadores = {}; // Usar let para permitir modificaciones
+
       try {
         const response = await api.get(`/EstacionesPorUsuario/${id}`);
-  
-        const estacionesMarcadores = {
-          "Estacion UT123": "EdificioMinas",  
-          "Estacion RM456": "CTA",                 
-        };
-  
+        console.log('aaa ' + JSON.stringify(response));
         
+        const estacionesMarcadores = response.data.reduce((acc, item) => {
+          acc[item.Nombre] = item.Ubicacion;
+          return acc;
+        }, {});
+        
+        console.log(estacionesMarcadores);
+
+      
+
         const marcadoresValidos = [
           "EdificioMinas",
           "CTA",
@@ -72,14 +78,14 @@ export const Mapa = () => {
         for (const estacion of estaciones) {
           const response = await api.get(`/SensoresPorEstacion/${estacion.id}`);
           const sensores = response.data;
-
+          console.log(response.data);
           sensores.forEach((sensor) => {
             const { MqttServer, MqttTopico } = sensor;
             //const MqttServer = "127.0.0.1:1884";
             //const MqttTopico = "Temperatura";
             // Conectar al servidor MQTT del sensor
             const client = mqtt.connect(`ws://${MqttServer}`);
-
+            
             client.on("connect", () => {
               console.log(`Conectado al servidor MQTT: ${MqttServer}`);
 

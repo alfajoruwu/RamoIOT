@@ -51,6 +51,65 @@ app.get("/", (req, res) => {
 });
 
 
+// ----------------- influx -----------------------
+app.get('/ObtenerInflux30/:TokenApi/:ORG/:IpEstacion/:Nombre_Bucket/:NombreVariable/:NombreSensor', async (req, res) => {
+  const { TokenApi, ORG, IpEstacion, Nombre_Bucket, NombreVariable, NombreSensor } = req.params;
+
+ 
+  const influxDBUrl = `http://${IpEstacion}/`; 
+  const token = TokenApi;
+  const org = ORG;
+
+  const client = new InfluxDB({ url: influxDBUrl, token: token });
+  const queryApi = client.getQueryApi(org);
+
+  const query = `
+      from(bucket: "${Nombre_Bucket}")
+      |> range(start: -30d)  // Obtiene datos de los últimos 30 días
+      |> filter(fn: (r) => r["_measurement"] == "${NombreVariable}")
+      |> filter(fn: (r) => r["_field"] == "value")
+      |> yield(name: "total")
+  `;
+
+  try {
+      const rawData = [];
+
+      await queryApi.queryRows(query, {
+          next(row, tableMeta) {
+              const o = tableMeta.toObject(row);
+              rawData.push(o);
+          },
+          error(error) {
+              console.error(error);
+              res.status(500).send('Error al obtener los datos de InfluxDB');
+          },
+          complete() {
+              
+              const result = {
+                  id: NombreSensor,
+                  type: NombreVariable,
+                  color: "#6b67a2",
+                  visible: false,
+                  data: rawData.map(item => {
+                      const date = new Date(item._time);
+                      const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}T${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+
+                      return {
+                          x: formattedDate, 
+                          y: item._value,
+                      };
+                  }),
+              };
+
+              res.json(result);
+          },
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Error en el servidor');
+  }
+});
+
 // ------------ Usuarios ------------
 app.post("/Login", (req, res) => {
   const { Correo, Contrasena } = req.body;
@@ -76,7 +135,14 @@ app.get('/EstacionesPorUsuario/:id_usuario', (req, res) => {
   const query = `
     SELECT 
       e.id_estacion AS id,
-      e.Nombre
+      e.Nombre,
+      e.API_Token,
+      e.ORG,
+      e.IpEstacion,
+      e.Ubicacion,
+      e.Rango,
+      e.Escala,
+      e.id_campo
     FROM 
       Estaciones e
     JOIN 
@@ -96,6 +162,7 @@ app.get('/EstacionesPorUsuario/:id_usuario', (req, res) => {
     res.json(results);
   });
 });
+
 
 
 app.post('/CrearEstacion', (req, res) => {
