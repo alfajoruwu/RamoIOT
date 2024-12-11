@@ -3,8 +3,15 @@ import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
 
 const AñadirEstacion = () => {
+  const [sensors, setSensors] = useState([
+    { id: 1, nombre: 'Sensor 1' },
+    { id: 2, nombre: 'Sensor 2' },
+    { id: 3, nombre: 'Sensor 3' },
+  ]);
 
   const { UsuarioID,Modificar} = useParams(); 
 
@@ -12,8 +19,13 @@ const AñadirEstacion = () => {
   const navigate = useNavigate();
 
 
-  const irAModificarSensor = (idSensor,idEstacion) => {
-    navigate(`/CrearModificarSensor/${id}`);
+  const irAModificarSensor = (idEstacion) => {
+    navigate(`/CrearModificarSensor/${idEstacion}`);
+  }
+
+
+  const irAModificarSensorExistente = (idEstacion,IDSensor) => {
+    navigate(`/CrearModificarSensor/${idEstacion}/${IDSensor}`);
   }
 
 
@@ -27,7 +39,7 @@ const AñadirEstacion = () => {
 
   return (
    <>    
-    <Navbar titulo={"Crear/Modificar Estacion actuador "+UsuarioID}  ></Navbar>
+    <Navbar titulo={"Crear/Modificar Estacion"+UsuarioID}  ></Navbar>
 
     <div className='ContenedorGenerico'>
         Nombre Estacion
@@ -50,12 +62,15 @@ const AñadirEstacion = () => {
         {Modificar && (
         <div className='ContenedorGenerico'>
           Sensores
-          <button onClick={() => irAModificarSensor(idSensor,idEstacion)} >Crear Sensor</button>
-              
+          <button onClick={() => irAModificarSensor(Modificar)} >Crear Sensor</button>
+
+            
           Sensores Disponibles
-          <button>Sensor 1</button>
-          <button>Sensor 2</button>
-          <button>Sensor 3</button>
+               {sensors.map((sensor) => (
+                  <button onClick={() => irAModificarSensorExistente(Modificar,sensor.id)}   key={sensor.id}>{sensor.nombre}</button>
+                ))}
+
+
         </div>
          )}
 

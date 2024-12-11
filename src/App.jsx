@@ -78,7 +78,10 @@ function App() {
         <Route path='/AñadirEstacion/:UsuarioID/:Modificar' element={<AñadirEstacion/>} />
 
 
-        <Route path='/CrearModificarSensor/:EstacionID/:SensorID' element={<CrearSensor/>}/>
+        <Route path='/CrearModificarSensor/:EstacionID' element={<CrearSensor/>}/>
+        <Route path='/CrearModificarSensor/:EstacionID/:IDSensor' element={<CrearSensor/>}/>
+
+
 
       </Routes>
 
