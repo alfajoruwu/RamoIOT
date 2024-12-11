@@ -4,6 +4,7 @@ import Navbar from "../Elementos comunes/Navbar/Navbar";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import "./Mapa.css";
 import api from "../../Utils/Axios/AxiosInstance";
+import mqtt from "mqtt";
 
 export const Mapa = () => {
   const { id } = useParams();
@@ -67,17 +68,57 @@ export const Mapa = () => {
     const fetchSensoresYTemperaturas = async () => {
       try {
         const heatDataTemp = {};
+
         for (const estacion of estaciones) {
-          
-          const temperaturaAleatoria = Math.floor(Math.random() * (40 - 15 + 1)) + 15;
-  
-          heatDataTemp[estacion.NombreMarcador] = {
-            temperatura: temperaturaAleatoria,  
-            marcador: estacion.NombreMarcador,  
-          };
+          const response = await api.get(`/SensoresPorEstacion/${estacion.id}`);
+          const sensores = response.data;
+
+          sensores.forEach((sensor) => {
+            const { MqttServer, MqttTopico } = sensor;
+            //const MqttServer = "127.0.0.1:1884";
+            //const MqttTopico = "Temperatura";
+            // Conectar al servidor MQTT del sensor
+            const client = mqtt.connect(`ws://${MqttServer}`);
+
+            client.on("connect", () => {
+              console.log(`Conectado al servidor MQTT: ${MqttServer}`);
+
+              // Suscribirse al tópico
+              client.subscribe(MqttTopico, (err) => {
+                if (err) {
+                  console.error(`Error al suscribirse a ${MqttTopico}:`, err);
+                } else {
+                  console.log(`Suscrito al tópico: ${MqttTopico}`);
+                }
+              });
+            });
+
+            client.on("message", (topic, message) => {
+              if (topic === MqttTopico) {
+                const temperatura = parseFloat(message.toString());
+
+                // Actualizar heatDataTemp con la temperatura recibida
+                heatDataTemp[estacion.NombreMarcador] = {
+                  temperatura,
+                  marcador: estacion.NombreMarcador,
+                };
+
+                // Actualizar el estado heatData
+                setHeatData((prevHeatData) => ({
+                  ...prevHeatData,
+                  [estacion.NombreMarcador]: {
+                    temperatura,
+                    marcador: estacion.NombreMarcador,
+                  },
+                }));
+              }
+            });
+
+            client.on("error", (err) => {
+              console.error(`Error en cliente MQTT para ${MqttTopico}:`, err);
+            });
+          });
         }
-        //console.log(heatDataTemp);
-        setHeatData(heatDataTemp);
       } catch (err) {
         console.error("Error al obtener sensores y temperaturas:", err);
         setError("No se pudieron cargar las temperaturas.");
@@ -134,13 +175,17 @@ export const Mapa = () => {
         {error ? (
           <p className="error">{error}</p>
         ) : (
-          estaciones.map((estacion) => (
-            <div key={estacion.id} className="estacion">
-              {estacion.NombreMarcador} {/* Mostrar el nombre del marcador */}
-            </div>
-          ))
+          estaciones.map((estacion) => {
+            const temperatura = heatData[estacion.NombreMarcador]?.temperatura || "N/A"; // Tomar directamente del heatData en orden
+            return (
+              <div key={estacion.id} className="estacion">
+                {estacion.NombreMarcador}: <span className="temperatura">{temperatura}°C</span>
+              </div>
+            );
+          })
         )}
       </div>
+
 
       <div className="mapa-container">
         <TransformWrapper>
