@@ -1,62 +1,74 @@
-import React from 'react'
-import { useState,useEffect } from 'react'
-import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar'
-import '../MenuInicial/MenuInicialADMIN.css'
-
-
+import React, { useState, useEffect } from 'react';
+import Navbar from '../../../../../Componentes/Elementos comunes/Navbar/Navbar';
+import '../MenuInicial/MenuInicialADMIN.css';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 const MenuInicialADMIN = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    const [users, setUsers] = useState([]);
+  const irAcrearusuario = () => {
+    navigate('/CrearUsuario');
+  };
 
-    const placeholderData = [
-        { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
-        { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
-        { id: 3, name: 'Sam Wilson', email: 'sam.wilson@example.com' },
-      ];
-    
+  const irAadministrarUsuario = (id) => {
+    navigate(`/AdministrarUsuario/${id}`);
+  };
 
-    const irAcrearusuario = () => {
-        navigate('/CrearUsuario');
-    }
+  useEffect(() => {
+    // Llamada a la API para obtener los usuarios
+    axios.get('http://localhost:3000/ObtenerUsuariosNormales')
+      .then(response => {
+        setUsers(response.data);
+      })
+      .catch(error => {
+        console.error('Error al obtener los usuarios:', error);
+      });
+  }, []);
 
-    const irAadministrarUsuario = (id) => {
-        navigate(`/AdministrarUsuario/${id}`);
-      };
-    
-    
-    useEffect(() => {
-        setUsers(placeholderData);
-    }, []);
+  // Filtrar usuarios por el término de búsqueda
+  const filteredUsers = users.filter(user => 
+    user.Nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    return (
-      <>
-        <Navbar titulo={"Menu inicial"}/>
+  return (
+    <>
+      <Navbar titulo={"Menu inicial"} />
 
-        <div className='FiltrosAdmin'>
-            Buscador
-            <div>
-                <input type="text"/>
-            </div>
-
-            <button onClick={irAcrearusuario}>Crear nuevo usuario</button>
-
+      <div className='FiltrosAdmin'>
+        <label>Buscador</label>
+        <div>
+          <input 
+            type="text" 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            placeholder="Buscar usuarios"
+          />
         </div>
 
-        <div className='MenuInicialADMIN'>
-            Usuarios registrados
+        <button onClick={irAcrearusuario}>Crear nuevo usuario</button>
+      </div>
 
-            {users.map((user) => (
-                <button onClick={() => irAadministrarUsuario(user.id)} key={user.id}>{user.name}</button>
-            ))}
-            
-    
-        </div>
+      <div className='MenuInicialADMIN'>
+        <h2>Usuarios registrados</h2>
+
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user) => (
+            <button 
+              onClick={() => irAadministrarUsuario(user.id)} 
+              key={user.id}
+            >
+              {user.Nombre}
+            </button>
+          ))
+        ) : (
+          <p>No se encontraron usuarios.</p>
+        )}
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default MenuInicialADMIN
+export default MenuInicialADMIN;

@@ -55,16 +55,19 @@ function App() {
         <Route path='/GraficoComparar' element={<GraficoComparar/>} />
 
         {/* ADMIN */}
-        <Route path='/MenuInicialADMIN/:id' element={<MenuInicialADMIN/>}/>
+        <Route path='/MenuInicialADMIN/:id' element={<MenuInicialADMIN/>}/> 
         <Route path='/MenuInicialAdmin' element={<MenuInicialAdmin></MenuInicialAdmin>} />
         <Route path='/CrearUsuario' element={<CrearNuevoUsuario/>}/>
-        
-        
         <Route path='/AdministrarUsuario/:id' element={<AdminsitrarUsuario/>}/>
         <Route path='/AdministrarSensores/:id' element={<AdministrarSensores/>}/>
-        <Route path='/AdministrarActuadores/:id' element={<AdministrarActuadores/>}/>
+        {/* OK  */}
+
+        <Route path='/AñadirEstacion/:UsuarioID' element={<AñadirEstacion/>} />
+        <Route path='/AñadirEstacion/:UsuarioID/:Modificar' element={<AñadirEstacion/>} />
 
         <Route path='/CrearActuador/:id' element={<ActuadorNuevo/>}/>
+        <Route path='/AdministrarActuadores/:id' element={<AdministrarActuadores/>}/>
+
 
         <Route path='/ModificarActuador/:id/:ActuadorID' element={<ModificarActuador/>}/>
         <Route path='/AñadirAccion/:ActuadorID' element={ <AñadirAccion/> }/>
@@ -74,8 +77,6 @@ function App() {
 
         <Route path='/Sensores' element={<Sensor/>} />
 
-        <Route path='/AñadirEstacion/:UsuarioID' element={<AñadirEstacion/>} />
-        <Route path='/AñadirEstacion/:UsuarioID/:Modificar' element={<AñadirEstacion/>} />
 
 
         <Route path='/CrearModificarSensor/:EstacionID' element={<CrearSensor/>}/>

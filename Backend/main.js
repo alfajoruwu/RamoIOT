@@ -66,8 +66,6 @@ app.post("/Login", (req, res) => {
 
 // ------------ Estaciones ------------
 
-
-
 app.get('/EstacionesPorUsuario/:id_usuario', (req, res) => {
   const { id_usuario } = req.params; // Obtén el id del usuario desde los params
 
@@ -99,39 +97,97 @@ app.get('/EstacionesPorUsuario/:id_usuario', (req, res) => {
   });
 });
 
-// ------------ Campo (revisar) ------------
 
-// Obtener todos los campos
-app.get("/Campos", (req, res) => {
-  const sql = `SELECT * FROM Campo`;
-  pool.query(sql, (err, results) => {
+app.post('/CrearEstacion', (req, res) => {
+  const { NombreEstacion, API_Token, InfluxOrganizacion, IPinflux, Ubicacion } = req.body;
+
+  // Verificar que todos los parámetros están presentes
+  if (!NombreEstacion || !API_Token || !InfluxOrganizacion || !IPinflux || !Ubicacion) {
+    return res.status(400).json({ error: 'Faltan parámetros en la solicitud' });
+  }
+
+  // Insertar la estación en la base de datos
+  const query = `
+    INSERT INTO Estaciones (Nombre, API_Token, ORG, IpEstacion, Ubicacion, Rango, Escala, id_campo)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  const rango = 30;  // Aquí puedes ajustar el valor de "Rango" dependiendo de tus necesidades
+  const escala = 'Km'; // Similar para la escala. Modifica según sea necesario
+  const idCampo = 1;  // Aquí asumo que el campo es fijo, cambia este valor si es dinámico.
+
+  pool.execute(query, [NombreEstacion, API_Token, InfluxOrganizacion, IPinflux, Ubicacion, rango, escala, idCampo], (err, results) => {
     if (err) {
-      console.error("Error al ejecutar la consulta para 'Campo':", err.message);
-      return res.status(500).json({ error: "Error al obtener los campos" });
+      console.error('Error al insertar la estación:', err);
+      return res.status(500).json({ error: 'Error al crear la estación' });
     }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron campos" });
-    }
-    res.status(200).json(results);
+    res.status(201).json({ message: 'Estación creada correctamente', id_estacion: results.insertId });
   });
 });
 
-// ------------ Usuario_Campo ------------
 
-// Obtener todas las relaciones Usuario-Campo
-app.get("/Usuario_Campo", (req, res) => {
-  const sql = `SELECT * FROM Usuario_Campo`;
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error al ejecutar la consulta para 'Usuario_Campo':", err.message);
-      return res.status(500).json({ error: "Error al obtener las relaciones Usuario-Campo" });
+app.get('/EstacionporIDEstacion/:id', (req, res) => {
+  const idEstacion = req.params.id;
+
+  const query = `
+    SELECT 
+      Nombre AS NombreEstacion,
+      API_Token,
+      ORG AS InfluxOrganizacion,
+      IpEstacion AS IPinflux,
+      Ubicacion
+    FROM Estaciones
+    WHERE id_estacion = ?
+  `;
+
+  pool.query(query, [idEstacion], (error, results) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error al obtener los datos de la estación' });
     }
+
     if (results.length === 0) {
-      return res.status(404).json({ error: "No se encontraron relaciones Usuario-Campo" });
+      return res.status(404).json({ message: 'Estación no encontrada' });
     }
-    res.status(200).json(results);
+
+    res.json(results[0]);
   });
 });
+
+// Ruta para actualizar la estación por id
+app.put('/EstacionporIDEstacion/:id', (req, res) => {
+  const idEstacion = req.params.id;
+  const { NombreEstacion, API_Token, InfluxOrganizacion, IPinflux, Ubicacion } = req.body;
+
+  // Verificación de que se recibieron todos los parámetros necesarios
+  if (!NombreEstacion || !API_Token || !InfluxOrganizacion || !IPinflux || !Ubicacion) {
+    return res.status(400).json({ message: 'Todos los campos son requeridos' });
+  }
+
+  const query = `
+    UPDATE Estaciones
+    SET 
+      Nombre = ?, 
+      API_Token = ?, 
+      ORG = ?, 
+      IpEstacion = ?, 
+      Ubicacion = ?
+    WHERE id_estacion = ?
+  `;
+
+  pool.query(query, [NombreEstacion, API_Token, InfluxOrganizacion, IPinflux, Ubicacion, idEstacion], (error, results) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error al actualizar los datos de la estación' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Estación no encontrada' });
+    }
+
+    res.json({ message: 'Estación actualizada correctamente' });
+  });
+});
+
 
 // ------------ Sensores ------------
 
@@ -159,6 +215,105 @@ app.get('/SensoresPorEstacion/:idEstacion', (req, res) => {
     }
 
     res.json(results);
+  });
+});
+
+app.post('/AnadirSensor', (req, res) => {
+  const { NombreSensor, NombreBucket, NombreVariable, Escala, Tipo, MqttServer, MqttTopico, id_estacion } = req.body;
+
+  // Verificar que todos los campos estén presentes
+  if (!NombreSensor || !NombreBucket || !NombreVariable || !Escala || !Tipo || !MqttServer || !MqttTopico || !id_estacion) {
+    return res.status(400).json({ error: 'Faltan campos requeridos' });
+  }
+
+  // Insertar el nuevo sensor en la base de datos
+  const query = `
+    INSERT INTO Sensores (Nombre, Nombre_Bucket, NombreVariable, Escala, Tipo, MqttServer, MqttTopico, id_estacion)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  pool.query(query, [NombreSensor, NombreBucket, NombreVariable, Escala, Tipo, MqttServer, MqttTopico, id_estacion], (err, result) => {
+    if (err) {
+      console.error('Error al añadir el sensor:', err);
+      return res.status(500).json({ error: 'Error al añadir el sensor' });
+    }
+    
+    // Si la inserción fue exitosa
+    res.status(201).json({
+      message: 'Sensor añadido correctamente',
+      id: result.insertId
+    });
+  });
+});
+
+
+// Ruta para obtener un sensor por su ID
+app.get('/sensorPorID/:id', (req, res) => {
+  const sensorId = req.params.id;
+
+  // Consulta para obtener los detalles del sensor por ID
+  const query = `
+    SELECT Nombre, Nombre_Bucket, NombreVariable, Escala, Tipo, MqttServer, MqttTopico, id_estacion
+    FROM Sensores
+    WHERE idSensor = ?
+  `;
+
+  pool.query(query, [sensorId], (err, result) => {
+    if (err) {
+      console.error('Error al obtener el sensor:', err);
+      return res.status(500).json({ error: 'Error al obtener el sensor' });
+    }
+
+    // Verificar si el sensor existe
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'Sensor no encontrado' });
+    }
+
+    // Devolver los detalles del sensor
+    res.json({
+      NombreSensor: result[0].Nombre,
+      NombreBucket: result[0].Nombre_Bucket,
+      NombreVariable: result[0].NombreVariable,
+      Escala: result[0].Escala,
+      Tipo: result[0].Tipo,
+      MqttServer: result[0].MqttServer,
+      MqttTopico: result[0].MqttTopico,
+      id_estacion: result[0].id_estacion
+    });
+  });
+});
+
+
+// Ruta para actualizar los detalles de un sensor por su ID
+app.put('/sensorPorID/:id', (req, res) => {
+  const sensorId = req.params.id;
+  const { NombreSensor, NombreBucket, NombreVariable, Escala, Tipo, MqttServer, MqttTopico, id_estacion } = req.body;
+
+  // Validar que todos los campos requeridos están presentes
+  if (!NombreSensor || !NombreBucket || !NombreVariable || !Escala || !Tipo || !MqttServer || !MqttTopico || !id_estacion) {
+    return res.status(400).json({ error: 'Todos los campos son requeridos' });
+  }
+
+  // Consulta para actualizar el sensor
+  const query = `
+    UPDATE Sensores
+    SET Nombre = ?, Nombre_Bucket = ?, NombreVariable = ?, Escala = ?, Tipo = ?, MqttServer = ?, MqttTopico = ?, id_estacion = ?
+    WHERE idSensor = ?
+  `;
+
+  pool.query(query, [NombreSensor, NombreBucket, NombreVariable, Escala, Tipo, MqttServer, MqttTopico, id_estacion, sensorId], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar el sensor:', err);
+      return res.status(500).json({ error: 'Error al actualizar el sensor' });
+    }
+
+    // Verificar si el sensor con ese ID fue encontrado
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Sensor no encontrado' });
+    }
+
+    // Responder con un mensaje de éxito
+    res.json({ message: 'Sensor actualizado correctamente' });
   });
 });
 
@@ -341,7 +496,7 @@ app.post('/AnadirCondicionSensor', (req, res) => {
 // -------------------------- ADMIN --------------------------
 
 // ------------- crearNuevoUsuario -------------
-
+// ------------- OK
 app.post('/crearNuevoUsuario', (req, res) => {
   const { Nombre, Contraseña, Correo } = req.body;
 
@@ -351,13 +506,13 @@ app.post('/crearNuevoUsuario', (req, res) => {
   }
 
   // Consulta SQL para insertar el nuevo usuario
-  const query = `
+  const queryUsuario = `
       INSERT INTO Usuarios (Usuario, Contrasena, Correo, Tipo)
       VALUES (?, ?, ?, 'Usuario')
   `;
 
-  // Ejecutar la consulta
-  pool.query(query, [Nombre, Contraseña, Correo], (error, results) => {
+  // Ejecutar la consulta para insertar el usuario
+  pool.query(queryUsuario, [Nombre, Contraseña, Correo], (error, results) => {
       if (error) {
           // Manejo de errores (e.g., correo duplicado)
           if (error.code === 'ER_DUP_ENTRY') {
@@ -367,13 +522,31 @@ app.post('/crearNuevoUsuario', (req, res) => {
           return res.status(500).json({ mensaje: 'Error del servidor' });
       }
 
-      // Usuario creado con éxito
-      return res.status(201).json({ mensaje: 'Usuario creado con éxito', id: results.insertId });
+      const usuarioId = results.insertId;
+
+      // Consulta SQL para agregar el usuario al campo 1 por defecto
+      const queryUsuarioCampo = `
+          INSERT INTO Usuario_Campo (id_usuario, id_campo)
+          VALUES (?, 1)  -- El id_campo 1 es el campo por defecto
+      `;
+
+      // Ejecutar la consulta para insertar el usuario en el campo 1
+      pool.query(queryUsuarioCampo, [usuarioId], (error, results) => {
+          if (error) {
+              console.error('Error al asignar el campo al usuario:', error);
+              return res.status(500).json({ mensaje: 'Error al asignar el campo al usuario' });
+          }
+
+          // Usuario creado y asignado al campo con éxito
+          return res.status(201).json({ mensaje: 'Usuario creado y asignado al campo 1 con éxito', id: usuarioId });
+      });
   });
 });
 
--// ----- obtener usuarios registrados ------
 
+
+// ----- obtener usuarios registrados ------
+// -------------- OK
 app.get('/ObtenerUsuariosNormales', (req, res) => {
   const query = 'SELECT ID as id, Usuario as Nombre FROM Usuarios WHERE Tipo != "Admin"';
 
@@ -386,6 +559,11 @@ app.get('/ObtenerUsuariosNormales', (req, res) => {
     }
   });
 });
+
+
+// --------------------- Sensores Admin -------------------------
+
+
 
 //--------------------- Administrar Actuadores usuario 1 -------------
 

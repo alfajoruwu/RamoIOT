@@ -152,9 +152,10 @@ INSERT INTO Estaciones (Nombre,API_Token,ORG, IpEstacion, Ubicacion, Rango, Esca
 ('Estacion RM456','dñfaksñldkfñlasdkflñka','Organizacion utalca', '321.321.321.32', 'Romeral', 50, 'Km', 2);
 
 -- Datos de ejemplo para Sensores
-INSERT INTO Sensores (Nombre, Nombre_Bucket, NombreVariable, Escala, Tipo, id_estacion) VALUES 
-('Sensor_Temp_UT123', 'Bucket_Temp_UT', 'Temperatura', 'Celsius', 'Clima', 1),
-('Sensor_Hum_RM456', 'Bucket_Hum_RM', 'Humedad', 'Porcentaje', 'Clima', 2);
+
+INSERT INTO Sensores (Nombre, Nombre_Bucket, NombreVariable,MqttServer, MqttTopico , Escala, Tipo, id_estacion) VALUES 
+('Sensor_Temp_UT123', 'Bucket_Temp_UT', 'Temperatura', 'asdfasd' , 'dasfasd' ,'Celsius', 'Clima', 1),
+('Sensor_Hum_RM456', 'Bucket_Hum_RM', 'Humedad', 'asdfsad' ,  'sadfasdf', 'Porcentaje', 'Clima', 2);
 
 -- Datos de ejemplo para Actuador
 INSERT INTO Actuador (Nombre, IPMqtt, Modo, Favorito, FavoritoMostrar, Id_Grupo, Id_Campo, EstadoActual, Topico) VALUES 
