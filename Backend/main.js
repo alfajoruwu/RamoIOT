@@ -338,6 +338,231 @@ app.post('/AnadirCondicionSensor', (req, res) => {
 });
 
 
+// -------------------------- ADMIN --------------------------
+
+// ------------- crearNuevoUsuario -------------
+
+app.post('/crearNuevoUsuario', (req, res) => {
+  const { Nombre, Contraseña, Correo } = req.body;
+
+  // Verificar que los datos requeridos estén presentes
+  if (!Nombre || !Contraseña || !Correo) {
+      return res.status(400).json({ mensaje: 'Faltan campos requeridos' });
+  }
+
+  // Consulta SQL para insertar el nuevo usuario
+  const query = `
+      INSERT INTO Usuarios (Usuario, Contrasena, Correo, Tipo)
+      VALUES (?, ?, ?, 'Usuario')
+  `;
+
+  // Ejecutar la consulta
+  pool.query(query, [Nombre, Contraseña, Correo], (error, results) => {
+      if (error) {
+          // Manejo de errores (e.g., correo duplicado)
+          if (error.code === 'ER_DUP_ENTRY') {
+              return res.status(409).json({ mensaje: 'El correo ya está en uso' });
+          }
+          console.error('Error al crear el usuario:', error);
+          return res.status(500).json({ mensaje: 'Error del servidor' });
+      }
+
+      // Usuario creado con éxito
+      return res.status(201).json({ mensaje: 'Usuario creado con éxito', id: results.insertId });
+  });
+});
+
+-// ----- obtener usuarios registrados ------
+
+app.get('/ObtenerUsuariosNormales', (req, res) => {
+  const query = 'SELECT ID as id, Usuario as Nombre FROM Usuarios WHERE Tipo != "Admin"';
+
+  pool.query(query, (error, results) => {
+    if (error) {
+      console.error('Error al obtener los usuarios normales:', error);
+      res.status(500).json({ error: 'Error al obtener los usuarios normales' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+//--------------------- Administrar Actuadores usuario 1 -------------
+
+//---- Obtener actuadores por usuario -----
+
+app.get('/ActuadoresPorUsuario/:idUsuario', (req, res) => {
+  const { idUsuario } = req.params;
+
+  const query = `
+    SELECT a.id AS id, a.Nombre AS nombre
+    FROM Actuador a
+    JOIN Campos c ON a.Id_Campo = c.IdCampo
+    JOIN Usuario_Campo uc ON c.IdCampo = uc.id_campo
+    WHERE uc.id_usuario = ?;
+  `;
+
+  pool.query(query, [idUsuario], (error, results) => {
+    if (error) {
+      console.error('Error al obtener los actuadores del usuario:', error);
+      res.status(500).json({ error: 'Error al obtener los actuadores del usuario' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+//----- Añadir actuador por usuario ------
+
+app.post('/AnadirActuadoraUsuario', (req, res) => {
+  const { idUsuario, NombreActuador, ServerMQTT, Topico } = req.body;
+
+  if (!idUsuario || !NombreActuador || !ServerMQTT || !Topico) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+  }
+
+  const queryObtenerCampo = `
+    SELECT id_campo 
+    FROM Usuario_Campo 
+    WHERE id_usuario = ? 
+    LIMIT 1;
+  `;
+
+  pool.query(queryObtenerCampo, [idUsuario], (error, results) => {
+    if (error) {
+      console.error('Error al obtener el campo del usuario:', error);
+      return res.status(500).json({ error: 'Error al obtener el campo del usuario' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'No se encontró un campo asociado al usuario' });
+    }
+
+    const idCampo = results[0].id_campo;
+
+    const queryInsertarActuador = `
+      INSERT INTO Actuador (Nombre, IPMqtt, Topico, Id_Campo, Modo, Favorito, FavoritoMostrar, EstadoActual)
+      VALUES (?, ?, ?, ?, 'Manual', 0, 'Ninguno', 'Desconocido');
+    `;
+
+    pool.query(queryInsertarActuador, [NombreActuador, ServerMQTT, Topico, idCampo], (error, result) => {
+      if (error) {
+        console.error('Error al insertar el actuador:', error);
+        return res.status(500).json({ error: 'Error al insertar el actuador' });
+      }
+
+      res.status(201).json({
+        message: 'Actuador añadido exitosamente',
+        actuadorId: result.insertId,
+      });
+    });
+  });
+});
+
+
+//------------------------ Modificar Actuador 1 --------------------
+
+//------ Añadir accion ------
+
+app.post('/AnadirAccionActuador', (req, res) => {
+  const { idActuador, NombreAccion, MensajeTopico, Topico } = req.body;
+
+  if (!idActuador || !NombreAccion || !MensajeTopico || !Topico) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+  }
+
+  // Insertar la nueva acción en la tabla Accion
+  const queryInsertarAccion = `
+    INSERT INTO Accion (Nombre, Mensaje, Topico)
+    VALUES (?, ?, ?);
+  `;
+
+  pool.query(queryInsertarAccion, [NombreAccion, MensajeTopico, Topico], (error, result) => {
+    if (error) {
+      console.error('Error al insertar la acción:', error);
+      return res.status(500).json({ error: 'Error al insertar la acción' });
+    }
+
+    const idAccion = result.insertId;
+
+    // Asociar la acción al actuador en la tabla AccionActuador
+    const queryAsociarAccionActuador = `
+      INSERT INTO AccionActuador (id_accion, id_actuador)
+      VALUES (?, ?);
+    `;
+
+    pool.query(queryAsociarAccionActuador, [idAccion, idActuador], (error) => {
+      if (error) {
+        console.error('Error al asociar la acción con el actuador:', error);
+        return res.status(500).json({ error: 'Error al asociar la acción con el actuador' });
+      }
+
+      res.status(201).json({
+        message: 'Acción añadida y asociada al actuador exitosamente',
+        accionId: idAccion,
+      });
+    });
+  });
+});
+
+//------ Obtener Accion por id -------
+
+app.get('/ObtenerdatosAccion/:id', (req, res) => {
+  const { id } = req.params; // Obtener el id desde los parámetros de la URL
+
+  // Consulta SQL para obtener los datos de la acción
+  const query = `
+    SELECT 
+      Nombre AS Nombre, 
+      Nombre AS NombreAccion, 
+      Mensaje AS MensajeTopico, 
+      Topico 
+    FROM Accion 
+    WHERE id_accion = ?;
+  `;
+
+  // Ejecutar la consulta
+  pool.query(query, [id], (error, results) => {
+    if (error) {
+      console.error('Error al obtener los datos de la acción:', error);
+      return res.status(500).json({ error: 'Error al obtener los datos de la acción' });
+    }
+
+    // Si no se encuentra la acción con el ID proporcionado
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'No se encontró una acción con el ID especificado' });
+    }
+
+    // Devolver los datos en formato JSON
+    res.json(results[0]);
+  });
+});
+
+//------ Obtener Acciones por actuador ------
+
+app.get('/ObtenerAccionesPorActuador/:IdActuador', (req, res) => {
+  const { IdActuador } = req.params;
+
+  const query = `
+      SELECT a.id_accion AS id, a.Nombre
+      FROM Accion a
+      JOIN AccionActuador aa ON a.id_accion = aa.id_accion
+      WHERE aa.id_actuador = ?
+  `;
+
+  pool.query(query, [IdActuador], (error, results) => {
+      if (error) {
+          console.error(error);
+          return res.status(500).json({ error: 'Error al obtener las acciones' });
+      }
+      
+      // Retornar las acciones en formato JSON
+      res.json(results);
+  });
+});
+
+
+
 
 
 // ------------- Print del puerto -------------
