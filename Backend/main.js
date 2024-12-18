@@ -17,15 +17,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // ------------- Conexion a la base de datos -------------
-// const pool = mysql.createPool({
-//   host: 'db',
-//   user: 'root',
-//   password: 'example',
-//   database: 'IOT',
-//   waitForConnections: true,
-//   connectionLimit: 10,
-//   queueLimit: 0
-// });
+const pool = mysql.createPool({
+  host: 'db',
+  user: 'root',
+  password: 'example',
+  database: 'IOT',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
 
 // ------------- Conexion a base de datos online -----------------
@@ -33,15 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // usuario - alfajor
 // contraseña - alfajor1234
 
-const pool = mysql.createPool({
-  host: 'sql10.freesqldatabase.com',
-  user: 'sql10750382',
-  password: '43ZKBBRk6k',
-  database: 'sql10750382',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+
 
 
 
@@ -560,6 +552,13 @@ app.post('/AnadirCondicionSensor', (req, res) => {
 });
 
 
+
+// ----------- Crear actuador ---------------------
+
+
+
+
+
 // -------------------------- ADMIN --------------------------
 
 // ------------- crearNuevoUsuario -------------
@@ -806,8 +805,169 @@ app.get('/ObtenerAccionesPorActuador/:IdActuador', (req, res) => {
   });
 });
 
+app.post('/crear-actuador', (req, res) => {
+  const { nombre, ipMqtt, topico } = req.body;
+
+  if (!nombre || !ipMqtt || !topico) {
+    return res.status(400).json({ message: 'Los campos Nombre, IP del servidor MQTT y Tópico son obligatorios.' });
+  }
+
+  const query = `
+    INSERT INTO Actuador (Nombre, IPMqtt, Modo, Favorito, FavoritoMostrar, Id_Grupo, Id_Campo, EstadoActual, Topico)
+    VALUES (?, ?, NULL, NULL, NULL, NULL, 1, NULL, ?)
+  `;
+
+  pool.query(query, [nombre, ipMqtt, topico], (error, results) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error al crear el actuador.' });
+    }
+
+    res.status(201).json({
+      message: 'Actuador creado exitosamente.',
+      actuadorId: results.insertId
+    });
+  });
+});
 
 
+
+// Obtener actuadores campo 1
+app.get('/ObtenerActuadoresPorCampo/:IdCampo', (req, res) => {
+  const { IdCampo } = req.params;
+
+  const query = `
+      SELECT 
+          a.id AS id,
+          a.Nombre,
+          a.IPMqtt,
+          a.Modo,
+          a.Favorito,
+          a.FavoritoMostrar,
+          a.EstadoActual,
+          a.Topico
+      FROM Actuador a
+      WHERE a.Id_Campo = ?
+  `;
+
+  pool.query(query, [IdCampo], (error, results) => {
+      if (error) {
+          console.error(error);
+          return res.status(500).json({ error: 'Error al obtener los actuadores' });
+      }
+      
+      // Retornar los actuadores en formato JSON
+      res.json(results);
+  });
+});
+
+
+// Añadir acción y asignarla a un actuador por id
+app.post('/addAccionToActuador', (req, res) => {
+  const { nombreaccion, mensajetopico, id_actuador } = req.body;
+
+  // Verificar que los datos necesarios están presentes
+  if (!nombreaccion || !mensajetopico || !id_actuador) {
+    return res.status(400).json({ error: 'Faltan los parámetros nombreaccion, mensajetopico o id_actuador' });
+  }
+
+  // Insertar la nueva acción en la tabla Accion
+  pool.query('INSERT INTO Accion (Nombre, Mensaje) VALUES (?, ?)', [nombreaccion, mensajetopico], (err, resultAccion) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al crear la acción' });
+    }
+
+    // Obtener el id de la acción recién insertada
+    const id_accion = resultAccion.insertId;
+
+    // Verificar que el actuador exista
+    pool.query('SELECT * FROM Actuador WHERE id = ?', [id_actuador], (err, resultActuador) => {
+      if (err) return res.status(500).json({ error: 'Error al verificar el actuador' });
+      if (resultActuador.length === 0) return res.status(404).json({ error: 'Actuador no encontrado' });
+
+      // Insertar la relación en la tabla AccionActuador
+      pool.query('INSERT INTO AccionActuador (id_accion, id_actuador) VALUES (?, ?)', [id_accion, id_actuador], (err, result) => {
+        if (err) {
+          return res.status(500).json({ error: 'Error al añadir la acción al actuador' });
+        }
+        return res.status(200).json({ message: 'Acción creada y añadida exitosamente al actuador' });
+      });
+    });
+  });
+});
+
+
+
+// Obtener las acciones de un actuador por id
+app.get('/getAccionesByActuador/:id_actuador', (req, res) => {
+  const { id_actuador } = req.params;
+
+  // Verificar que el id_actuador sea un número válido
+  if (isNaN(id_actuador)) {
+    return res.status(400).json({ error: 'El id_actuador debe ser un número válido' });
+  }
+
+  // Consultar las acciones asociadas al actuador en la tabla AccionActuador
+  pool.query('SELECT a.id_accion, a.Nombre, a.Mensaje FROM Accion a ' +
+    'JOIN AccionActuador aa ON a.id_accion = aa.id_accion ' +
+    'WHERE aa.id_actuador = ?', [id_actuador], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al obtener las acciones del actuador' });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron acciones para este actuador' });
+    }
+
+    // Devolver las acciones asociadas al actuador
+    return res.status(200).json(result);
+  });
+});
+
+
+//obtener Acciones
+app.get('/accion/:idAccion', (req, res) => {
+  const idAccion = req.params.idAccion;
+
+  // Consulta SQL
+  const query = 'SELECT Nombre, Mensaje FROM Accion WHERE id_accion = ?';
+
+  pool.query(query, [idAccion], (err, results) => {
+    if (err) {
+      console.error('Error ejecutando la consulta', err);
+      return res.status(500).send('Error en la consulta');
+    }
+    
+    // Verificamos si se encontró la acción
+    if (results.length > 0) {
+      res.json(results[0]); // Devuelve el nombre y mensaje de la acción
+    } else {
+      res.status(404).send('Acción no encontrada');
+    }
+  });
+});
+
+
+app.put('/accion/:idAccion', (req, res) => {
+  const idAccion = req.params.idAccion;
+  const { nombreaccion, mensajetopico } = req.body;
+
+  // Consulta SQL para actualizar la acción
+  const query = 'UPDATE Accion SET Nombre = ?, Mensaje = ? WHERE id_accion = ?';
+
+  pool.query(query, [nombreaccion, mensajetopico, idAccion], (err, results) => {
+    if (err) {
+      console.error('Error ejecutando la consulta', err);
+      return res.status(500).send('Error en la consulta');
+    }
+    
+    // Verificamos si la actualización fue exitosa
+    if (results.affectedRows > 0) {
+      res.send('Acción actualizada exitosamente');
+    } else {
+      res.status(404).send('Acción no encontrada');
+    }
+  });
+});
 
 
 // ------------- Print del puerto -------------

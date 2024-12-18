@@ -70,8 +70,7 @@ CREATE TABLE Actuador (
 CREATE TABLE Accion (
     id_accion INT PRIMARY KEY AUTO_INCREMENT,
     Nombre VARCHAR(50),
-    Mensaje VARCHAR(50),
-    Topico VARCHAR(50)
+    Mensaje VARCHAR(50)
 );
 
 CREATE TABLE AccionActuador (
@@ -131,8 +130,8 @@ CREATE TABLE Notificacion (
 
 -- Datos de ejemplo para Usuarios
 INSERT INTO Usuarios (Usuario, Contrasena, Correo, Tipo) VALUES 
-('Matias', '1234', 'Mcamilla20@alumnos.utalca.cl', 'Admin'),
-('Alfitar', '4321', 'alfitar@gmail.com', 'Usuario');
+('Matias', 'admin', 'admin', 'Admin'),
+('alfajor', 'user', 'user', 'Usuario');
 
 -- Datos de ejemplo para Campos
 INSERT INTO Campos (Nombre) VALUES 
@@ -163,9 +162,9 @@ INSERT INTO Actuador (Nombre, IPMqtt, Modo, Favorito, FavoritoMostrar, Id_Grupo,
 ('Regador_Principal', '192.168.1.20', 'Manual', 0, 'Notificaciones', 2, 2, 'Abierto', 'Patio/RM456');
 
 -- Datos de ejemplo para Accion
-INSERT INTO Accion (Nombre, Mensaje, Topico) VALUES 
-('Abrir Techo', 'Accion para abrir el techo', 'Techo/abrir'),
-('Cerrar Techo', 'Accion para cerrar el techo', 'Techo/cerrar');
+INSERT INTO Accion (Nombre, Mensaje) VALUES 
+('Abrir Techo', 'Accion para abrir el techo'),
+('Cerrar Techo', 'Accion para cerrar el techo');
 
 -- Datos de ejemplo para AccionActuador
 INSERT INTO AccionActuador (id_accion, id_actuador) VALUES 
